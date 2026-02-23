@@ -1,5 +1,21 @@
 # Reproducible Bioinformatics Pipeline (DNA/RNA + PRS)
 
+## Biological Significance
+
+This pipeline is designed to connect **raw sequencing and external variant data to biologically interpretable outputs** that are commonly used in genomics and translational research:
+
+- variant calling and functional annotation for DNA sequencing data
+- GWAS summary interpretation (Manhattan/QQ/volcano plots)
+- variant-to-gene mapping and pathway enrichment
+- optional PRS scoring from genotype-bearing VCFs
+
+In practice, this supports biologically meaningful workflows such as:
+
+- prioritizing disease-associated loci (for example, AD GWAS signals in `APOE/TOMM40`)
+- identifying pathways enriched in variant-mapped genes (for example, lipid/cholesterol transport pathways in Alzheimer-related GWAS summaries)
+- comparing preprocessing quality changes before/after trimming in FASTQ pipelines
+- harmonizing external cohort VCFs for downstream interpretation and PRS compatibility checks
+
 This project provides a **fundamentals-first, reproducible Snakemake pipeline** that supports:
 
 1. Pre-processing with FastQC
@@ -12,6 +28,24 @@ This project provides a **fundamentals-first, reproducible Snakemake pipeline** 
 8. PRS scoring
 
 All outputs are written to `results/`, and detailed documentation is in `docs/`.
+
+## Observed Runtime (Example Test Runs)
+
+The following runtimes were observed on a local laptop test environment and are intended as **practical expectations**, not guarantees. They vary with CPU/RAM, storage, dataset size, reference indexes, and whether conda environments are already built.
+
+These times reflect the **main workflow runs** (not one-time dataset downloads or one-time reference index creation).
+
+| Mode | Example Input | Observed Time | Notes |
+| --- | --- | --- | --- |
+| `gwas_summary` (`variant_only`) | ADVP Alzheimer GWAS TSV (`advp.variant.records.hg38.tsv`) | ~18 sec | Completed successfully; summary-stat interpretation/enrichment path |
+| `variant_only` (`vcf_interpretation`) | 1000G Phase 3 chr19 VCF | ~10 min 42 sec | Completed successfully; includes PRS branch (0 matched loci in this test) |
+| `full` (DNA smoke test) | Local FASTQ subset (`NIST7035` subset) | ~1 min 44 sec to complete variant interpretation outputs | Core QC/alignment/calling/annotation outputs completed; depth branch later became bottleneck |
+| `full` (same run, depth enabled) | Same FASTQ subset | `depth_per_sample` finished by ~2 min 49 sec; `depth_summary` failed at ~6 min 55 sec | Generated a ~39 GB depth file (`samtools depth -a`), then `depth_summary` exited (code 137) |
+
+Recommended local testing settings for `full` mode:
+
+- `run.enable_depth: false` for fast functional validation
+- or `depth.emit_all_positions: false` to avoid huge `samtools depth -a` outputs
 
 Additional runtime guidance for local/HPC/container setups is in `docs/REPRODUCIBLE_EXECUTION.md`.
 Alzheimer PRS model details and calculation notes are in `docs/ALZHEIMERS_PRS.md`.
