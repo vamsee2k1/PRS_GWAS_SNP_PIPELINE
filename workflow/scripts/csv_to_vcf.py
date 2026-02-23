@@ -223,6 +223,14 @@ def derive_missing_ref(df_norm, ref_fasta, report_rows):
             unique_regions.append(region)
 
     if not missing_idx:
+        if bad_rows:
+            report_rows.append(
+                ("ref_derivation", "WARNING", f"No rows eligible for REF derivation; {len(bad_rows)} row(s) unresolved")
+            )
+            report_rows.append(
+                ("ref_derivation_unresolved", "WARNING", f"Could not derive REF for {len(bad_rows)} row(s)")
+            )
+            return bad_rows
         report_rows.append(("ref_derivation", "OK", "No REF derivation needed"))
         return []
 

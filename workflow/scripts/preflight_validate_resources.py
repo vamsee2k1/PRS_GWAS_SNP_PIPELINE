@@ -18,6 +18,7 @@ def parse_args():
     p.add_argument("--reference-fasta", required=True)
     p.add_argument("--reference-gtf", required=True)
     p.add_argument("--reference-star-index", default="")
+    p.add_argument("--dna-short-aligner", default="auto")
     p.add_argument("--expected-build", default="")
     p.add_argument("--variants-input", default="")
     p.add_argument("--prs-weights", default="")
@@ -158,6 +159,15 @@ def normalize_build_name(name):
     return ""
 
 
+def has_bwa_mem2_index(ref_path):
+    return Path(f"{ref_path}.bwt.2bit.64").exists()
+
+
+def has_bwa_index(ref_path):
+    suffixes = [".amb", ".ann", ".bwt", ".pac", ".sa"]
+    return all(Path(f"{ref_path}{suf}").exists() for suf in suffixes)
+
+
 def main():
     args = parse_args()
     rpt = Reporter()
@@ -191,6 +201,69 @@ def main():
             )
     else:
         rpt.error("reference_gtf_exists", f"Missing GTF: {gtf}")
+
+    if args.mode != "variant_only" and args.assay == "dna" and args.read_type == "short":
+        aligner = str(args.dna_short_aligner or "auto").strip().lower()
+        valid_aligners = {"auto", "bwa_mem2", "bwa", "minimap2_sr"}
+        if aligner not in valid_aligners:
+            rpt.error(
+                "dna_short_aligner",
+                (
+                    "Unsupported dna_short_aligner in preflight: "
+                    f"{aligner}. Expected one of: {', '.join(sorted(valid_aligners))}"
+                ),
+            )
+        else:
+            rpt.ok("dna_short_aligner", aligner)
+
+        mem2_ready = has_bwa_mem2_index(args.reference_fasta)
+        bwa_ready = has_bwa_index(args.reference_fasta)
+        if mem2_ready:
+            rpt.ok("bwa_mem2_index_ready", f"Found bwa-mem2 index for {args.reference_fasta}")
+        else:
+            rpt.warning(
+                "bwa_mem2_index_ready",
+                f"Missing bwa-mem2 index (.bwt.2bit.64) for {args.reference_fasta}",
+            )
+        if bwa_ready:
+            rpt.ok("bwa_index_ready", f"Found classic BWA index for {args.reference_fasta}")
+        else:
+            rpt.warning(
+                "bwa_index_ready",
+                f"Missing classic BWA index (.amb/.ann/.bwt/.pac/.sa) for {args.reference_fasta}",
+            )
+
+        if aligner == "bwa_mem2" and not mem2_ready:
+            rpt.error(
+                "dna_short_alignment_index",
+                (
+                    "alignment.dna_short_aligner=bwa_mem2 but bwa-mem2 index is missing. "
+                    "Build the bwa-mem2 index or switch aligner to bwa/minimap2_sr."
+                ),
+            )
+        elif aligner == "bwa" and not bwa_ready:
+            rpt.error(
+                "dna_short_alignment_index",
+                (
+                    "alignment.dna_short_aligner=bwa but classic BWA index is missing. "
+                    "Build classic BWA index or switch aligner."
+                ),
+            )
+        elif aligner == "auto":
+            if mem2_ready:
+                rpt.ok("dna_short_alignment_index", "auto mode will use bwa-mem2")
+            elif bwa_ready:
+                rpt.warning("dna_short_alignment_index", "auto mode will fall back to classic BWA")
+            else:
+                rpt.error(
+                    "dna_short_alignment_index",
+                    (
+                        "alignment.dna_short_aligner=auto but no bwa-mem2 or classic BWA index was found. "
+                        "Build an index or set alignment.dna_short_aligner=minimap2_sr."
+                    ),
+                )
+        elif aligner == "minimap2_sr":
+            rpt.ok("dna_short_alignment_index", "minimap2_sr does not require prebuilt BWA indexes")
 
     if args.assay == "rna" and args.read_type == "short":
         if not args.reference_star_index:

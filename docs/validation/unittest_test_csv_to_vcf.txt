@@ -1,0 +1,10 @@
+test_build_mapping_detects_advp_aliases (tests.test_csv_to_vcf.CsvToVcfTests.test_build_mapping_detects_advp_aliases) ... ok
+test_build_normalized_table_marks_missing_ref_as_warning (tests.test_csv_to_vcf.CsvToVcfTests.test_build_normalized_table_marks_missing_ref_as_warning) ... ok
+test_derive_missing_ref_fills_ref_and_normalizes_contig (tests.test_csv_to_vcf.CsvToVcfTests.test_derive_missing_ref_fills_ref_and_normalizes_contig) ... ok
+test_derive_missing_ref_reports_non_snp_alt_as_unresolved (tests.test_csv_to_vcf.CsvToVcfTests.test_derive_missing_ref_reports_non_snp_alt_as_unresolved) ... ok
+test_normalize_rows_for_vcf_drops_invalid_rows (tests.test_csv_to_vcf.CsvToVcfTests.test_normalize_rows_for_vcf_drops_invalid_rows) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.003s
+
+OK

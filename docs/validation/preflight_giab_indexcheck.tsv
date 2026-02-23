@@ -1,0 +1,19 @@
+check	status	detail
+reference_fasta_exists	OK	resources/reference/GRCh38.fa
+reference_fasta_index_exists	OK	resources/reference/GRCh38.fa.fai
+reference_gtf_exists	OK	resources/reference/Homo_sapiens.GRCh38.110.gtf
+reference_gtf_format	OK	GTF has >=9 tab-separated columns
+dna_short_aligner	OK	auto
+bwa_mem2_index_ready	WARNING	Missing bwa-mem2 index (.bwt.2bit.64) for resources/reference/GRCh38.fa
+bwa_index_ready	OK	Found classic BWA index for resources/reference/GRCh38.fa
+dna_short_alignment_index	WARNING	auto mode will fall back to classic BWA
+samplesheet_exists	OK	config/samples.giab_hg002.tsv
+samplesheet_columns	OK	Required columns present
+samplesheet_fastq_paths	OK	All fastq_1 paths exist
+metadata_exists	OK	config/metadata.giab_hg002.tsv
+metadata_columns	OK	Required columns present
+prs_weights_exists	OK	resources/prs/models/PGS002280.txt.gz
+prs_weights_columns	OK	PGS Catalog columns detected
+gene_sets_exists	OK	resources/enrichment/real/Reactome_2022.gmt
+gene_sets_format	OK	GMT-style line with >=3 tab-separated fields detected
+annotation_method	OK	Using overlap-based annotation

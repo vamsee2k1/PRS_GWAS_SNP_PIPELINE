@@ -296,6 +296,7 @@ rule preflight_resources:
         ref_fasta=REF_FASTA,
         ref_gtf=REF_GTF,
         star_index=STAR_INDEX,
+        dna_short_aligner=DNA_SHORT_ALIGNER,
         expected_build=REFERENCE.get("genome_build", ""),
         variants_input=EXT_VARIANTS,
         prs_weights=PRS_WEIGHTS,
@@ -312,6 +313,7 @@ rule preflight_resources:
         "--samplesheet '{params.samplesheet}' --metadata '{params.metadata}' "
         "--reference-fasta '{params.ref_fasta}' --reference-gtf '{params.ref_gtf}' "
         "--reference-star-index '{params.star_index}' "
+        "--dna-short-aligner '{params.dna_short_aligner}' "
         "--expected-build '{params.expected_build}' "
         "--variants-input '{params.variants_input}' "
         "--prs-weights '{params.prs_weights}' --prs-weights-format '{params.prs_weights_format}' "

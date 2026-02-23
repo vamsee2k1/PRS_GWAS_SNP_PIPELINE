@@ -1,0 +1,18 @@
+item	status	detail
+input_file	OK	INPUT_TEST_FILES/advp.variant.records.hg38.tsv
+input_rows	OK	6346
+input_columns	OK	#dbSNP_hg38_chr, dbSNP_hg38_position, Top SNP, P-value, LocusName, RA 1(Reported Allele 1), nonref_allele, nonref_effect, OR_nonref, nearest_gene_symb, Study type, Study Design, Pubmed PMID, Population_map, Cohort_simple3, Sample size, Analysis group, Phenotype, Phenotype-derived, most_severe_consequence
+column_mapping	OK	ALT <- nonref_allele
+column_mapping	OK	BETA <- nonref_effect
+column_mapping	OK	CHROM <- #dbSNP_hg38_chr
+column_mapping	OK	ID <- Top SNP
+column_mapping	OK	OR <- OR_nonref
+column_mapping	OK	P <- P-value
+column_mapping	OK	POS <- dbSNP_hg38_position
+column_mapping_required	WARNING	Unmapped required fields: REF
+required_fields	WARNING	Missing required fields after alias mapping: REF
+ref_derivation	OK	Derived REF for 2910 row(s)
+ref_derivation_unresolved	WARNING	Could not derive REF for 3436 row(s)
+required_fields_final	OK	Required fields resolved
+row_validation	WARNING	Dropping invalid rows: 4365
+output_rows	OK	1981
