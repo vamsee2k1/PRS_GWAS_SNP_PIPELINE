@@ -53,6 +53,7 @@ Alzheimer dataset files and caveats are in `docs/ALZHEIMERS_DATASETS.md`.
 Statistical threshold rationale is documented in `docs/STATISTICAL_THRESHOLDS.md`.
 Project architecture/thesis-style design rationale is in `docs/PROJECT_THESIS.md`.
 GitHub publishing, branch protection, and citation setup is in `docs/GITHUB_PUBLISHING.md`.
+Recent regression-test and example-file validation evidence is in `docs/validation/2026-02-23_regression_checks.md`.
 
 ## Quick Start
 
