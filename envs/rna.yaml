@@ -1,0 +1,9 @@
+name: bioinfo-rna
+channels:
+  - conda-forge
+  - bioconda
+  - nodefaults
+dependencies:
+  - stringtie>=2.2
+  - subread>=2.0
+  - samtools>=1.20

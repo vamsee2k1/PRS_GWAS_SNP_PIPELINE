@@ -1,0 +1,20 @@
+output_dir: results_variant_only_vcf_test
+
+run:
+  mode: variant_only
+  variant_data_mode: vcf_interpretation
+  threads: 4
+  enable_depth: false
+
+paths:
+  # Replace with your external VCF/VCF.GZ.
+  variants_input: INPUT_TEST_FILES/ALL.chr19.phase3_shapeit2_mvncall_integrated_v5b.20130502.genotypes.vcf.gz
+  # Optional PRS model; set to "" to skip PRS branch.
+  prs_weights: resources/prs/models/PGS002280.txt.gz
+
+validation:
+  # 1000G phase3 is commonly GRCh37; disable only for mechanics tests when using GRCh38 refs.
+  enforce_build_match: false
+
+annotation:
+  method: overlap

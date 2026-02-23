@@ -1,0 +1,54 @@
+output_dir: results_alzheimers_clinvar
+samplesheet: config/samples.tsv
+metadata: config/metadata.tsv
+
+run:
+  mode: variant_only
+  variant_data_mode: vcf_interpretation
+  assay: dna
+  read_type: short
+  threads: 8
+  use_external_variants_for_prs: true
+
+reference:
+  genome_build: GRCh38
+  fasta: resources/reference/GRCh38.fa
+  gtf: resources/reference/Homo_sapiens.GRCh38.110.gtf
+  star_index: resources/reference/star_grch38_index
+
+alignment:
+  long_read_preset_dna: map-ont
+  long_read_preset_rna: splice
+
+thresholds:
+  min_base_quality: 20
+  min_read_length: 50
+  min_variant_qual: 0
+  min_variant_depth: 0
+  require_filter_pass: false
+  variant_qc_max_samples_for_genotype_metrics: 1000
+  de_padj: 0.05
+  de_abs_log2fc: 1.0
+  enrichment_qvalue: 0.05
+  variant_assoc_pvalue: 5e-8
+  variant_assoc_abs_effect: 0.0
+  variant_heatmap_top_n: 50
+
+paths:
+  variants_input: data/variants/alzheimers/clinvar.vcf.gz
+  # Disabled for this source because ClinVar site VCF has no per-sample genotype columns.
+  prs_weights: ""
+  gene_sets: resources/enrichment/real/Reactome_2022.gmt
+
+prs:
+  weights_format: pgs_catalog
+  prefer_ds: true
+  allow_ambiguous_strand: false
+
+annotation:
+  method: overlap
+  snpeff_database: ""
+
+deseq2:
+  design_formula: "~ condition"
+  contrast: "condition,case,control"

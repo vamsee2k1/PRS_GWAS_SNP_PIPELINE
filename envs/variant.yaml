@@ -1,0 +1,15 @@
+name: bioinfo-variant
+channels:
+  - conda-forge
+  - bioconda
+  - nodefaults
+dependencies:
+  - bcftools>=1.20
+  - samtools>=1.20
+  - htslib>=1.20
+  - bedtools>=2.31
+  - mosdepth>=0.3.8
+  - snpeff>=5.2
+  - openjdk>=17
+  - python>=3.11
+  - pandas>=2.2

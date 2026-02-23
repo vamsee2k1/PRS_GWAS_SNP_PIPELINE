@@ -1,0 +1,24 @@
+output_dir: results_full_dna_test
+samplesheet: config/samples.tsv
+metadata: config/metadata.tsv
+
+run:
+  mode: full
+  assay: dna
+  read_type: short
+  threads: 4
+  # Set false for fast local validation runs; true for production coverage reports.
+  enable_depth: false
+
+alignment:
+  # auto = prefer bwa-mem2 if mem2 index exists, otherwise fall back to classic bwa if bwa index exists.
+  dna_short_aligner: auto
+
+depth:
+  # For production whole-genome runs, switch to true if you need all-position depth.
+  emit_all_positions: false
+
+paths:
+  # Empty in full mode unless you explicitly want to use an external VCF for PRS branch.
+  variants_input: ""
+  prs_weights: ""

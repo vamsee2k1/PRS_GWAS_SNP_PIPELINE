@@ -1,0 +1,40 @@
+.DS_Store
+__pycache__/
+*.pyc
+
+# Snakemake runtime state and caches
+.snakemake/
+.cache/
+.conda/
+cache/
+.mamba/
+.home/
+
+# Generated outputs
+results*/
+
+# Local downloaded/test data
+data/
+INPUT_TEST_FILES/
+SRR1766493/
+*.sra
+
+# Large local resources (download separately; document in docs/)
+resources/reference/
+resources/annotation/
+resources/prs/models/
+resources/enrichment/real/
+
+# Large ad hoc test files kept at repo root
+*.vcf.gz
+*.vcf.gz.tbi
+*.fastq.gz
+*.bam
+*.bai
+
+# Local config overrides
+config/*_local.yaml
+config/override.*.yaml
+
+# Local workspace scratch folder used to prepare GitHub-ready copy
+github/

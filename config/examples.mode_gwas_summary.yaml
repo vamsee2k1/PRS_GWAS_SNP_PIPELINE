@@ -1,0 +1,20 @@
+output_dir: results_gwas_summary_test
+
+run:
+  mode: variant_only
+  variant_data_mode: gwas_summary
+  threads: 4
+  # Fast local test toggle: skip large depth outputs (not used in variant_only anyway).
+  enable_depth: false
+
+paths:
+  # Example: ADVP / NIAGADS-like GWAS summary TSV/CSV.
+  variants_input: INPUT_TEST_FILES/advp.variant.records.hg38.tsv
+  # Summary-stat inputs do not produce sample-level PRS scores; disable PRS in this mode unless testing harmonization only.
+  prs_weights: ""
+
+validation:
+  enforce_build_match: true
+
+annotation:
+  method: overlap

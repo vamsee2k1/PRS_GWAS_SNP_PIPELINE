@@ -1,0 +1,2 @@
+sample	fastq_1	fastq_2
+HG002	data/giab_hg002/HG002_sub_R1.fastq.gz	data/giab_hg002/HG002_sub_R2.fastq.gz

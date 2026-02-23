@@ -1,0 +1,56 @@
+output_dir: results_non_ad_gwas_ieu_a_2
+samplesheet: config/samples.tsv
+metadata: config/metadata.tsv
+
+run:
+  mode: variant_only
+  variant_data_mode: gwas_summary
+  assay: dna
+  read_type: short
+  threads: 8
+  use_external_variants_for_prs: true
+
+reference:
+  # This test GWAS VCF is GRCh37. Your current local reference files are GRCh38.
+  # The pipeline will still run (normalization falls back to split-only), but functional annotation
+  # is best interpreted only when reference build matches the VCF build.
+  genome_build: GRCh37
+  fasta: resources/reference/GRCh38.fa
+  gtf: resources/reference/Homo_sapiens.GRCh38.110.gtf
+  star_index: resources/reference/star_grch38_index
+
+alignment:
+  long_read_preset_dna: map-ont
+  long_read_preset_rna: splice
+
+thresholds:
+  min_base_quality: 20
+  min_read_length: 50
+  min_variant_qual: 30
+  min_variant_depth: 0
+  require_filter_pass: true
+  de_padj: 0.05
+  de_abs_log2fc: 1.0
+  enrichment_qvalue: 0.05
+  variant_assoc_pvalue: 5e-8
+  variant_assoc_abs_effect: 0.0
+  variant_heatmap_top_n: 50
+
+paths:
+  variants_input: data/variants/non_ad/IEU-a-2.vcf.gz
+  # Disabled: this file is GWAS summary-stat VCF (no genotype GT/DS sample columns for PRS).
+  prs_weights: ""
+  gene_sets: resources/enrichment/real/Reactome_2022.gmt
+
+prs:
+  weights_format: pgs_catalog
+  prefer_ds: true
+  allow_ambiguous_strand: false
+
+annotation:
+  method: overlap
+  snpeff_database: ""
+
+deseq2:
+  design_formula: "~ condition"
+  contrast: "condition,case,control"

@@ -1,0 +1,10 @@
+name: bioinfo-qc
+channels:
+  - conda-forge
+  - bioconda
+  - nodefaults
+dependencies:
+  - fastqc>=0.12
+  - multiqc>=1.18
+  - fastp>=0.23
+  - python>=3.11

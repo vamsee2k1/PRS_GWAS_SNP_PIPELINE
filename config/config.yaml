@@ -1,0 +1,86 @@
+output_dir: results
+samplesheet: config/samples.tsv
+metadata: config/metadata.tsv
+
+run:
+  mode: full               # full | variant_only | vcf_interpretation | gwas_summary
+  variant_data_mode: auto  # auto | vcf_interpretation | gwas_summary (used in variant_only mode)
+  assay: rna               # dna | rna
+  read_type: short         # short | long
+  threads: 8
+  use_external_variants_for_prs: false
+  # If false, skips mosdepth/depth-per-base/depth-summary outputs (useful for quick test runs).
+  enable_depth: true
+
+reference:
+  genome_build: GRCh38     # GRCh38 (latest) or hg19/GRCh37
+  fasta: resources/reference/GRCh38.fa
+  gtf: resources/reference/Homo_sapiens.GRCh38.110.gtf
+  star_index: resources/reference/star_grch38_index
+
+alignment:
+  # dna short-read aligner: auto | bwa_mem2 | bwa | minimap2_sr
+  # auto prefers bwa-mem2 if bwa-mem2 index is present, then bwa if bwa index exists.
+  dna_short_aligner: auto
+  long_read_preset_dna: map-ont
+  long_read_preset_rna: splice
+
+depth:
+  # When true, samtools depth uses -a (all positions). Disable for much smaller/faster depth files in tests.
+  emit_all_positions: true
+
+thresholds:
+  min_base_quality: 20
+  min_read_length: 50
+  min_variant_qual: 30
+  # Optional depth guard for variant records (0 disables depth filtering).
+  min_variant_depth: 0
+  # Require FILTER=PASS for external VCF variants.
+  require_filter_pass: true
+  # RNA differential expression defaults (widely used in practice).
+  de_padj: 0.05
+  de_abs_log2fc: 1.0
+  # FDR/q-value threshold for enrichment outputs.
+  enrichment_qvalue: 0.05
+  # GWAS-style genome-wide significance threshold for variant association plots.
+  variant_assoc_pvalue: 5e-8
+  # Minimum absolute effect size (beta or log(OR)) for highlighting in volcano/association table.
+  variant_assoc_abs_effect: 0.0
+  # Number of top-ranked variants to display in genotype heatmap.
+  variant_heatmap_top_n: 50
+
+paths:
+  # Optional: if set, accepts .vcf, .vcf.gz, or .csv for external variants.
+  # In mode=variant_only, this must be set.
+  variants_input: ""
+
+  # Required if PRS step should run.
+  # Default uses a real Alzheimer disease model from PGS Catalog (PGS002280, GRCh38).
+  prs_weights: resources/prs/models/PGS002280.txt.gz
+
+  # Production-ready pathway library (real public resource).
+  gene_sets: resources/enrichment/real/Reactome_2022.gmt
+
+prs:
+  # auto | pgs_catalog | simple_tsv
+  weights_format: pgs_catalog
+  # Prefer dosage (DS) over hard genotype (GT) when available in VCF.
+  prefer_ds: true
+  # Exclude ambiguous A/T and C/G SNPs unless explicitly enabled.
+  allow_ambiguous_strand: false
+
+annotation:
+  # overlap | snpeff
+  method: overlap
+  # Required only when method=snpeff (example: GRCh38.99).
+  snpeff_database: ""
+
+validation:
+  # If true, fail preflight when input variant build does not match expected reference build.
+  enforce_build_match: true
+  # If true, treat any preflight WARNING as a hard failure.
+  fail_on_warning: false
+
+deseq2:
+  design_formula: "~ condition"
+  contrast: "condition,case,control"

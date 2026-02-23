@@ -1,0 +1,13 @@
+name: bioinfo-r-stats
+channels:
+  - conda-forge
+  - bioconda
+  - nodefaults
+dependencies:
+  - r-base>=4.3
+  - r-optparse
+  - r-ggplot2
+  - r-pheatmap
+  - bioconductor-deseq2
+  - bioconductor-clusterprofiler
+  - bioconductor-enrichplot

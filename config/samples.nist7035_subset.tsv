@@ -1,0 +1,2 @@
+sample	fastq_1	fastq_2
+NIST7035	data/nist7035_subset/NIST7035_sub_R1.fastq.gz	data/nist7035_subset/NIST7035_sub_R2.fastq.gz

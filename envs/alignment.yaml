@@ -1,0 +1,11 @@
+name: bioinfo-alignment
+channels:
+  - conda-forge
+  - bioconda
+  - nodefaults
+dependencies:
+  - bwa>=0.7.17
+  - bwa-mem2>=2.2
+  - minimap2>=2.28
+  - star>=2.7
+  - samtools>=1.20

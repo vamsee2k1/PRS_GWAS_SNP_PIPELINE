@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "If you use this pipeline in research, benchmarking, or publication, please cite the software and document the exact version/configuration."
+title: "Reproducible Bioinformatics Pipeline (DNA/RNA + Variant Interpretation + PRS)"
+type: software
+authors:
+  - family-names: "A"
+    given-names: "Vamsee"
+repository-code: "https://github.com/<your-username>/<your-repo>"
+license: "Apache-2.0"
+abstract: >
+  A Snakemake-based bioinformatics pipeline supporting full DNA/RNA processing,
+  variant-only interpretation, GWAS-summary ingestion, and optional PRS scoring
+  with reproducible conda environments and preflight validation.
+keywords:
+  - snakemake
+  - bioinformatics
+  - variant-calling
+  - gwas
+  - prs
+  - genomics
+version: "0.1.0"
+

@@ -1,0 +1,57 @@
+output_dir: results_inputtest_1kg_chr1_test06
+samplesheet: config/samples.tsv
+metadata: config/metadata.tsv
+
+run:
+  mode: variant_only
+  variant_data_mode: vcf_interpretation
+  assay: dna
+  read_type: short
+  threads: 8
+  use_external_variants_for_prs: true
+
+reference:
+  genome_build: GRCh38
+  fasta: resources/reference/GRCh38.fa
+  gtf: resources/reference/Homo_sapiens.GRCh38.110.gtf
+  star_index: resources/reference/star_grch38_index
+
+alignment:
+  long_read_preset_dna: map-ont
+  long_read_preset_rna: splice
+
+thresholds:
+  min_base_quality: 20
+  min_read_length: 50
+  min_variant_qual: 30
+  min_variant_depth: 0
+  require_filter_pass: true
+  de_padj: 0.05
+  de_abs_log2fc: 1.0
+  enrichment_qvalue: 0.05
+  variant_assoc_pvalue: 5e-8
+  variant_assoc_abs_effect: 0.0
+  variant_heatmap_top_n: 50
+  variant_qc_max_samples_for_genotype_metrics: 1000
+
+paths:
+  variants_input: INPUT_TEST_FILES/ALL.chr1.phase3_shapeit2_mvncall_integrated_v5b.20130502.genotypes.vcf.gz
+  prs_weights: resources/prs/models/PGS002280.txt.gz
+  gene_sets: resources/enrichment/real/Reactome_2022.gmt
+
+prs:
+  weights_format: pgs_catalog
+  prefer_ds: true
+  allow_ambiguous_strand: false
+
+annotation:
+  method: overlap
+  snpeff_database: ""
+
+validation:
+  enforce_build_match: true
+  fail_on_warning: false
+
+deseq2:
+  design_formula: "~ condition"
+  contrast: "condition,case,control"

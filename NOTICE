@@ -1,0 +1,15 @@
+Bioinformatics Pipeline (DNA/RNA + Variant Interpretation + PRS)
+
+Copyright (c) 2026 Vamsee A. and contributors
+
+This project is released as open source under the Apache License 2.0 (see LICENSE).
+
+Academic/research use request:
+If this software contributes to analyses, figures, benchmarks, or publications,
+please cite the software repository release and describe the exact pipeline version,
+configuration, and reference resources used. See CITATION.cff for machine-readable
+citation metadata.
+
+No endorsement:
+Use of this software does not imply endorsement by the authors of derived results.
+
