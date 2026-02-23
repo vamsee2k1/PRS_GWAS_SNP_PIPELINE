@@ -5,7 +5,7 @@ type: software
 authors:
   - family-names: "A"
     given-names: "Vamsee"
-repository-code: "https://github.com/<your-username>/<your-repo>"
+repository-code: "https://github.com/vamsee2k1/PRS_GWAS_SNP_PIPELINE"
 license: "Apache-2.0"
 abstract: >
   A Snakemake-based bioinformatics pipeline supporting full DNA/RNA processing,
@@ -19,4 +19,3 @@ keywords:
   - prs
   - genomics
 version: "0.1.0"
-
