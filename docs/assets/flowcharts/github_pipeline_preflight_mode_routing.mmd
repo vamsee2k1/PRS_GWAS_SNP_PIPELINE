@@ -1,0 +1,35 @@
+flowchart TD
+%% Nodes
+A("Start"):::green
+B("Load Config <br> config.yaml + override"):::orange
+C("Resolve Runtime Settings <br> mode / assay / read_type / variant_data_mode"):::blue
+D("Build Snakemake DAG"):::blue
+E("Preflight Validation <br> preflight_validate_resources.py"):::yellow
+F{"Preflight Status?"}:::yellow
+ZERR("Stop Run <br> preflight_checks.tsv"):::pink
+G{"run.mode"}:::yellow
+
+H("FULL MODE branch"):::pink
+I("VARIANT_ONLY branch"):::purple
+J("Shared Interpretation Layer"):::green
+K("Run Manifest + Final Outputs"):::green
+L("End"):::green
+
+%% Edges
+A --> B --> C --> D --> E --> F
+F -- Error --> ZERR
+F -- OK / Warning --> G
+G -- full --> H
+G -- variant_only --> I
+H --> J
+I --> J
+J --> K --> L
+E --> K
+
+%% Styling
+classDef green fill:#B2DFDB,stroke:#00897B,stroke-width:2px;
+classDef orange fill:#FFE0B2,stroke:#FB8C00,stroke-width:2px;
+classDef blue fill:#BBDEFB,stroke:#1976D2,stroke-width:2px;
+classDef yellow fill:#FFF9C4,stroke:#FBC02D,stroke-width:2px;
+classDef pink fill:#F8BBD0,stroke:#C2185B,stroke-width:2px;
+classDef purple fill:#E1BEE7,stroke:#8E24AA,stroke-width:2px;

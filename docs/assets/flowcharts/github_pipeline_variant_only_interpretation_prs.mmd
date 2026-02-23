@@ -1,0 +1,80 @@
+flowchart TD
+%% Nodes
+A("VARIANT_ONLY Input <br> VCF / VCF.GZ / CSV / TSV"):::purple
+B{"Input type"}:::yellow
+C("Normalize external variants <br> bcftools norm/view + tabix"):::blue
+D("CSV/TSV -> VCF conversion <br> csv_to_vcf.py"):::purple
+E("Alias mapping + REF derivation <br> diagnostics reports"):::yellow
+F("Filter external variants <br> bcftools view + tabix"):::blue
+G("external.filtered.vcf.gz"):::green
+H{"Final variants source select"}:::yellow
+I("final.filtered.vcf.gz"):::green
+J{"annotation.method"}:::yellow
+K("Overlap mode <br> use final VCF directly"):::orange
+L("snpEff annotation + bgzip + tabix"):::purple
+M("final.snpeff.vcf.gz"):::green
+N("VCF -> variant BED + base table"):::blue
+O("GTF -> feature BED"):::blue
+P("Variant-feature overlap <br> bedtools intersect"):::blue
+Q("Aggregate variant annotations"):::blue
+R("annotated_variants.tsv"):::green
+S("variant_genes.tsv"):::green
+T("variant_annotation_summary.tsv"):::green
+U("Variant QC metrics + plots"):::orange
+V{"variant_data_mode"}:::yellow
+W("GWAS-style visuals <br> Manhattan / QQ / Volcano / Heatmap"):::pink
+X("VCF interpretation visuals"):::pink
+Y("Variant enrichment analysis"):::purple
+Z("variant_enrichment.tsv + dotplot"):::green
+AA{"PRS weights configured?"}:::yellow
+AB("Skip PRS branch"):::orange
+AC("PRS scoring + harmonization"):::purple
+AD("PRS reports + QC + distribution"):::purple
+AE{"Genotype-bearing VCF?"}:::yellow
+AF("No sample-level PRS <br> summary-style inputs"):::orange
+AG("Sample-level PRS scores <br> if loci overlap"):::green
+AH("Shared outputs to manifest"):::green
+%% Edges
+A --> B
+B -- VCF/VCF.GZ --> C
+B -- CSV/TSV --> D --> E --> C
+C --> F --> G
+G --> H
+H --> I
+I --> J
+J -- overlap --> K
+J -- snpeff --> L --> M --> K
+K --> N
+O --> P
+N --> P --> Q
+Q --> R
+Q --> S
+Q --> T
+I --> U
+R --> V
+I --> V
+V -- gwas_summary --> W
+V -- vcf_interpretation --> X
+S --> Y --> Z
+I --> AA
+AA -- No --> AB
+AA -- Yes --> AC --> AD
+AC --> AE
+AE -- No --> AF
+AE -- Yes --> AG
+R --> AH
+S --> AH
+T --> AH
+U --> AH
+W --> AH
+X --> AH
+Z --> AH
+AD --> AH
+AB --> AH
+%% Styling
+classDef green fill:#B2DFDB,stroke:#00897B,stroke-width:2px;
+classDef orange fill:#FFE0B2,stroke:#FB8C00,stroke-width:2px;
+classDef blue fill:#BBDEFB,stroke:#1976D2,stroke-width:2px;
+classDef yellow fill:#FFF9C4,stroke:#FBC02D,stroke-width:2px;
+classDef pink fill:#F8BBD0,stroke:#C2185B,stroke-width:2px;
+classDef purple fill:#E1BEE7,stroke:#8E24AA,stroke-width:2px;

@@ -1,5 +1,239 @@
 # Pipeline Details (Step-by-Step)
 
+## Pipeline Flowcharts
+
+### 1) Preflight + Mode Routing
+
+```mermaid
+flowchart TD
+%% Nodes
+A("Start"):::green
+B("Load Config <br> config.yaml + override"):::orange
+C("Resolve Runtime Settings <br> mode / assay / read_type / variant_data_mode"):::blue
+D("Build Snakemake DAG"):::blue
+E("Preflight Validation <br> preflight_validate_resources.py"):::yellow
+F{"Preflight Status?"}:::yellow
+ZERR("Stop Run <br> preflight_checks.tsv"):::pink
+G{"run.mode"}:::yellow
+
+H("FULL MODE branch"):::pink
+I("VARIANT_ONLY branch"):::purple
+J("Shared Interpretation Layer"):::green
+K("Run Manifest + Final Outputs"):::green
+L("End"):::green
+
+%% Edges
+A --> B --> C --> D --> E --> F
+F -- Error --> ZERR
+F -- OK / Warning --> G
+G -- full --> H
+G -- variant_only --> I
+H --> J
+I --> J
+J --> K --> L
+E --> K
+
+%% Styling
+classDef green fill:#B2DFDB,stroke:#00897B,stroke-width:2px;
+classDef orange fill:#FFE0B2,stroke:#FB8C00,stroke-width:2px;
+classDef blue fill:#BBDEFB,stroke:#1976D2,stroke-width:2px;
+classDef yellow fill:#FFF9C4,stroke:#FBC02D,stroke-width:2px;
+classDef pink fill:#F8BBD0,stroke:#C2185B,stroke-width:2px;
+classDef purple fill:#E1BEE7,stroke:#8E24AA,stroke-width:2px;
+```
+
+### 2) Full Mode (FASTQ to Variant Calling / RNA Branch)
+
+```mermaid
+flowchart TD
+%% Nodes
+A("FULL MODE Inputs <br> samplesheet + metadata + FASTQ + references"):::pink
+B("Raw QC <br> FastQC"):::orange
+C("Trim / Filter Reads <br> fastp"):::orange
+D("Post-trim QC + Aggregation <br> FastQC + MultiQC + qc_compare.py"):::orange
+E{"assay + read_type"}:::yellow
+
+F{"DNA short aligner <br> auto / bwa_mem2 / bwa / minimap2_sr"}:::yellow
+G("Align DNA short <br> bwa-mem2 mem + samtools sort"):::blue
+H("Align DNA short <br> bwa mem + samtools sort"):::blue
+I("Align DNA short <br> minimap2 -ax sr + samtools sort"):::blue
+
+J("Align DNA long <br> minimap2 DNA preset"):::blue
+K{"STAR index ready?"}:::yellow
+L("Build STAR index"):::purple
+M("Align RNA short <br> STAR"):::blue
+N("Align RNA long <br> minimap2 splice preset"):::blue
+
+O("Sorted BAM"):::green
+P("Index BAM <br> samtools index"):::blue
+Q{"DNA short mode?"}:::yellow
+R("Mark duplicates + index <br> samtools markdup"):::purple
+S("Final BAM for downstream"):::green
+
+T("Alignment QC <br> samtools flagstat + stats"):::orange
+U{"run.enable_depth?"}:::yellow
+V("Depth branch <br> mosdepth + samtools depth"):::purple
+W("Depth skipped / placeholders"):::orange
+
+X{"DNA assay?"}:::yellow
+Y("Variant Calling <br> bcftools mpileup + call"):::pink
+Z("Variant Filtering <br> bcftools filter / view"):::pink
+AA("called.filtered.vcf.gz"):::green
+
+AB("RNA branch entry"):::purple
+AC("StringTie assembly / merge"):::purple
+AD("featureCounts gene quantification"):::purple
+AE("DESeq2 differential expression"):::purple
+AF("RNA enrichment analysis"):::purple
+
+AG("Output to shared interpretation layer"):::green
+
+%% Edges
+A --> B --> C --> D --> E
+
+E -- DNA short --> F
+F -- auto + bwa-mem2 --> G
+F -- auto fallback / bwa --> H
+F -- minimap2_sr --> I
+
+E -- DNA long --> J
+E -- RNA short --> K
+K -- No --> L --> M
+K -- Yes --> M
+E -- RNA long --> N
+
+G --> O
+H --> O
+I --> O
+J --> O
+M --> O
+N --> O
+
+O --> P --> Q
+Q -- Yes --> R --> S
+Q -- No --> S
+
+S --> T
+S --> U
+U -- Yes --> V
+U -- No --> W
+
+S --> X
+X -- Yes --> Y --> Z --> AA --> AG
+X -- No (RNA) --> AB --> AC --> AD --> AE --> AF --> AG
+
+%% Styling
+classDef green fill:#B2DFDB,stroke:#00897B,stroke-width:2px;
+classDef orange fill:#FFE0B2,stroke:#FB8C00,stroke-width:2px;
+classDef blue fill:#BBDEFB,stroke:#1976D2,stroke-width:2px;
+classDef yellow fill:#FFF9C4,stroke:#FBC02D,stroke-width:2px;
+classDef pink fill:#F8BBD0,stroke:#C2185B,stroke-width:2px;
+classDef purple fill:#E1BEE7,stroke:#8E24AA,stroke-width:2px;
+```
+
+### 3) Variant-Only + Shared Interpretation + PRS
+
+```mermaid
+flowchart TD
+%% Nodes
+A("VARIANT_ONLY Input <br> VCF / VCF.GZ / CSV / TSV"):::purple
+B{"Input type"}:::yellow
+C("Normalize external variants <br> bcftools norm/view + tabix"):::blue
+D("CSV/TSV -> VCF conversion <br> csv_to_vcf.py"):::purple
+E("Alias mapping + REF derivation <br> diagnostics reports"):::yellow
+F("Filter external variants <br> bcftools view + tabix"):::blue
+G("external.filtered.vcf.gz"):::green
+
+H{"Final variants source select"}:::yellow
+I("final.filtered.vcf.gz"):::green
+
+J{"annotation.method"}:::yellow
+K("Overlap mode <br> use final VCF directly"):::orange
+L("snpEff annotation + bgzip + tabix"):::purple
+M("final.snpeff.vcf.gz"):::green
+
+N("VCF -> variant BED + base table"):::blue
+O("GTF -> feature BED"):::blue
+P("Variant-feature overlap <br> bedtools intersect"):::blue
+Q("Aggregate variant annotations"):::blue
+
+R("annotated_variants.tsv"):::green
+S("variant_genes.tsv"):::green
+T("variant_annotation_summary.tsv"):::green
+
+U("Variant QC metrics + plots"):::orange
+V{"variant_data_mode"}:::yellow
+W("GWAS-style visuals <br> Manhattan / QQ / Volcano / Heatmap"):::pink
+X("VCF interpretation visuals"):::pink
+
+Y("Variant enrichment analysis"):::purple
+Z("variant_enrichment.tsv + dotplot"):::green
+
+AA{"PRS weights configured?"}:::yellow
+AB("Skip PRS branch"):::orange
+AC("PRS scoring + harmonization"):::purple
+AD("PRS reports + QC + distribution"):::purple
+AE{"Genotype-bearing VCF?"}:::yellow
+AF("No sample-level PRS <br> summary-style inputs"):::orange
+AG("Sample-level PRS scores <br> if loci overlap"):::green
+
+AH("Shared outputs to manifest"):::green
+
+%% Edges
+A --> B
+B -- VCF/VCF.GZ --> C
+B -- CSV/TSV --> D --> E --> C
+C --> F --> G
+
+G --> H
+H --> I
+
+I --> J
+J -- overlap --> K
+J -- snpeff --> L --> M --> K
+
+K --> N
+O --> P
+N --> P --> Q
+
+Q --> R
+Q --> S
+Q --> T
+
+I --> U
+R --> V
+I --> V
+V -- gwas_summary --> W
+V -- vcf_interpretation --> X
+
+S --> Y --> Z
+
+I --> AA
+AA -- No --> AB
+AA -- Yes --> AC --> AD
+AC --> AE
+AE -- No --> AF
+AE -- Yes --> AG
+
+R --> AH
+S --> AH
+T --> AH
+U --> AH
+W --> AH
+X --> AH
+Z --> AH
+AD --> AH
+AB --> AH
+
+%% Styling
+classDef green fill:#B2DFDB,stroke:#00897B,stroke-width:2px;
+classDef orange fill:#FFE0B2,stroke:#FB8C00,stroke-width:2px;
+classDef blue fill:#BBDEFB,stroke:#1976D2,stroke-width:2px;
+classDef yellow fill:#FFF9C4,stroke:#FBC02D,stroke-width:2px;
+classDef pink fill:#F8BBD0,stroke:#C2185B,stroke-width:2px;
+classDef purple fill:#E1BEE7,stroke:#8E24AA,stroke-width:2px;
+```
+
 ## Step 1: Pre-processing (`FastQC`)
 
 - Runs FastQC on raw reads.

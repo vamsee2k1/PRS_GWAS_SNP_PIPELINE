@@ -55,6 +55,49 @@ Project architecture/thesis-style design rationale is in `docs/PROJECT_THESIS.md
 GitHub publishing, branch protection, and citation setup is in `docs/GITHUB_PUBLISHING.md`.
 Recent regression-test and example-file validation evidence is in `docs/validation/2026-02-23_regression_checks.md`.
 
+## Pipeline Architecture (High-Level)
+
+```mermaid
+flowchart TD
+    A([Start]) --> B["Load config and select mode"]
+    B --> C["Preflight validation"]
+    C --> D{"Mode"}
+
+    D -->|Full mode| E["FASTQ workflow"]
+    E --> E1["QC and trimming"]
+    E1 --> E2["Alignment and BAM processing"]
+    E2 --> E3["Variant calling and filtering"]
+    E3 --> J["Final filtered VCF"]
+
+    D -->|Variant-only mode| F["External variants input"]
+    F --> F1{"Input type"}
+    F1 -->|VCF/VCF.GZ| F2["Normalize and filter variants"]
+    F1 -->|CSV/TSV| F3["Convert table to VCF and normalize"]
+    F2 --> J
+    F3 --> J
+
+    J --> K["Variant annotation and gene mapping"]
+    K --> L["Variant QC plots and interpretation visuals"]
+    K --> M["Pathway enrichment"]
+
+    J --> N{"PRS weights configured?"}
+    N -->|Yes| O["PRS scoring and PRS QC"]
+    N -->|No| P["Skip PRS"]
+
+    E2 --> Q{"RNA mode?"}
+    Q -->|Yes| R["RNA quantification, DE analysis, enrichment"]
+    Q -->|No| S["Skip RNA branch"]
+
+    L --> T["Run manifest and final outputs"]
+    M --> T
+    O --> T
+    R --> T
+    C --> T
+    T --> U([End])
+```
+
+Detailed split flowcharts (preflight/mode routing, full mode, and variant-only + interpretation + PRS) are documented in `docs/PIPELINE_DETAILS.md`.
+
 ## Quick Start
 
 1. Prepare inputs using `docs/USER_INPUT_FORMATS.md`.

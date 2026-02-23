@@ -1,0 +1,69 @@
+flowchart TD
+%% Nodes
+A("FULL MODE Inputs <br> samplesheet + metadata + FASTQ + references"):::pink
+B("Raw QC <br> FastQC"):::orange
+C("Trim / Filter Reads <br> fastp"):::orange
+D("Post-trim QC + Aggregation <br> FastQC + MultiQC + qc_compare.py"):::orange
+E{"assay + read_type"}:::yellow
+F{"DNA short aligner <br> auto / bwa_mem2 / bwa / minimap2_sr"}:::yellow
+G("Align DNA short <br> bwa-mem2 mem + samtools sort"):::blue
+H("Align DNA short <br> bwa mem + samtools sort"):::blue
+I("Align DNA short <br> minimap2 -ax sr + samtools sort"):::blue
+J("Align DNA long <br> minimap2 DNA preset"):::blue
+K{"STAR index ready?"}:::yellow
+L("Build STAR index"):::purple
+M("Align RNA short <br> STAR"):::blue
+N("Align RNA long <br> minimap2 splice preset"):::blue
+O("Sorted BAM"):::green
+P("Index BAM <br> samtools index"):::blue
+Q{"DNA short mode?"}:::yellow
+R("Mark duplicates + index <br> samtools markdup"):::purple
+S("Final BAM for downstream"):::green
+T("Alignment QC <br> samtools flagstat + stats"):::orange
+U{"run.enable_depth?"}:::yellow
+V("Depth branch <br> mosdepth + samtools depth"):::purple
+W("Depth skipped / placeholders"):::orange
+X{"DNA assay?"}:::yellow
+Y("Variant Calling <br> bcftools mpileup + call"):::pink
+Z("Variant Filtering <br> bcftools filter / view"):::pink
+AA("called.filtered.vcf.gz"):::green
+AB("RNA branch entry"):::purple
+AC("StringTie assembly / merge"):::purple
+AD("featureCounts gene quantification"):::purple
+AE("DESeq2 differential expression"):::purple
+AF("RNA enrichment analysis"):::purple
+AG("Output to shared interpretation layer"):::green
+%% Edges
+A --> B --> C --> D --> E
+E -- DNA short --> F
+F -- auto + bwa-mem2 --> G
+F -- auto fallback / bwa --> H
+F -- minimap2_sr --> I
+E -- DNA long --> J
+E -- RNA short --> K
+K -- No --> L --> M
+K -- Yes --> M
+E -- RNA long --> N
+G --> O
+H --> O
+I --> O
+J --> O
+M --> O
+N --> O
+O --> P --> Q
+Q -- Yes --> R --> S
+Q -- No --> S
+S --> T
+S --> U
+U -- Yes --> V
+U -- No --> W
+S --> X
+X -- Yes --> Y --> Z --> AA --> AG
+X -- No (RNA) --> AB --> AC --> AD --> AE --> AF --> AG
+%% Styling
+classDef green fill:#B2DFDB,stroke:#00897B,stroke-width:2px;
+classDef orange fill:#FFE0B2,stroke:#FB8C00,stroke-width:2px;
+classDef blue fill:#BBDEFB,stroke:#1976D2,stroke-width:2px;
+classDef yellow fill:#FFF9C4,stroke:#FBC02D,stroke-width:2px;
+classDef pink fill:#F8BBD0,stroke:#C2185B,stroke-width:2px;
+classDef purple fill:#E1BEE7,stroke:#8E24AA,stroke-width:2px;

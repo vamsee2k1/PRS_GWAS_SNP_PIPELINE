@@ -1,0 +1,48 @@
+flowchart TB
+    A[Config + Mode Selection<br/>Snakemake + YAML] --> B[Preflight Validation<br/>Resources / Inputs / Build checks]
+    B --> C{Mode}
+
+    %% FULL MODE
+    C -->|Full Mode| F1[FASTQ Inputs<br/>samplesheet + metadata]
+    F1 --> F2[QC + Trimming<br/>FastQC / fastp / MultiQC]
+    F2 --> F3[Alignment<br/>BWA-MEM2 / BWA / minimap2 / STAR]
+    F3 --> F4[BAM Processing<br/>sort / index / markdup / alignment QC]
+    F4 --> F5[Variant Calling + Filtering<br/>bcftools mpileup/call/filter]
+    F5 --> VFINAL[Final Filtered VCF]
+
+    %% VARIANT ONLY
+    C -->|Variant-Only Mode| V1[External Variant Input<br/>VCF / VCF.GZ / CSV / TSV]
+    V1 --> V2{Input Type}
+    V2 -->|VCF| V3[Normalize + Filter<br/>bcftools + tabix]
+    V2 -->|CSV / TSV| V4[Convert + Normalize<br/>csv_to_vcf.py]
+    V4 --> V5[Alias Mapping + REF Derivation<br/>Diagnostics Report]
+    V5 --> V3
+    V3 --> VFINAL
+
+    %% SHARED INTERPRETATION
+    VFINAL --> I1[Variant Annotation Layer<br/>overlap or snpEff]
+    I1 --> I2[Variant-to-Gene Mapping<br/>VCF->BED + bedtools intersect]
+    I2 --> I3[Interpretation Outputs]
+    I3 --> I31[Variant QC Metrics + Plots]
+    I3 --> I32[GWAS-style Visuals<br/>Manhattan / QQ / Volcano / Heatmap]
+    I3 --> I33[Gene/Pathway Enrichment]
+
+    %% PRS
+    VFINAL --> P1{PRS Weights Configured?}
+    P1 -->|Yes| P2[PRS Scoring + Harmonization<br/>prs_from_vcf.py]
+    P2 --> P3[PRS QC + Scores + Plot]
+    P1 -->|No| P4[Skip PRS Branch]
+
+    %% RNA branch
+    F3 --> R1{RNA mode?}
+    R1 -->|Yes| R2[RNA Quant + DGE + Enrichment<br/>StringTie / featureCounts / DESeq2]
+    R1 -->|No| R3[Skip RNA Branch]
+
+    %% Final
+    I31 --> Z[Run Manifest + Final Outputs]
+    I32 --> Z
+    I33 --> Z
+    P3 --> Z
+    R2 --> Z
+    B --> Z
+    Z --> END([End])
