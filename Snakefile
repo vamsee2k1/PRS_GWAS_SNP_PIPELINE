@@ -30,6 +30,7 @@ LONG_READ_PRESET_DNA = ALIGNMENT.get("long_read_preset_dna", "map-ont")
 LONG_READ_PRESET_RNA = ALIGNMENT.get("long_read_preset_rna", "splice")
 DEPTH_CFG = config.get("depth", {})
 DEPTH_EMIT_ALL_POSITIONS = bool(DEPTH_CFG.get("emit_all_positions", True))
+DEPTH_EMIT_PER_BASE_TSV = bool(DEPTH_CFG.get("emit_per_base_tsv", True))
 RUN_ENABLE_DEPTH = bool(RUN.get("enable_depth", True))
 
 THRESHOLDS = config.get("thresholds", {})
@@ -569,9 +570,17 @@ if MODE != "variant_only" and ASSAY == "dna" and READ_TYPE == "short":
         threads: THREADS_DEFAULT
         conda:
             "envs/variant.yaml"
+        params:
+            name_sorted=f"{OUTDIR}/alignment/{{sample}}.name_sorted.bam",
+            fixmate=f"{OUTDIR}/alignment/{{sample}}.fixmate.bam",
+            fixmate_sorted=f"{OUTDIR}/alignment/{{sample}}.fixmate.sorted.bam"
         shell:
-            "samtools markdup -@ {threads} -r -s {input.bam} {output.bam} 2> {output.metrics} && "
-            "samtools index -@ {threads} {output.bam}"
+            "samtools sort -n -@ {threads} -o {params.name_sorted} {input.bam} && "
+            "samtools fixmate -m -@ {threads} {params.name_sorted} {params.fixmate} && "
+            "samtools sort -@ {threads} -o {params.fixmate_sorted} {params.fixmate} && "
+            "samtools markdup -@ {threads} -r -s {params.fixmate_sorted} {output.bam} 2> {output.metrics} && "
+            "samtools index -@ {threads} {output.bam} && "
+            "rm -f {params.name_sorted} {params.fixmate} {params.fixmate_sorted}"
 
 
 rule alignment_qc:
@@ -595,7 +604,8 @@ rule mosdepth_coverage:
         bam=lambda wc: variant_bam_for_sample(wc.sample),
         bai=lambda wc: variant_bai_for_sample(wc.sample)
     output:
-        summary=f"{OUTDIR}/depth/{{sample}}.mosdepth.summary.txt"
+        summary=f"{OUTDIR}/depth/{{sample}}.mosdepth.summary.txt",
+        dist=f"{OUTDIR}/depth/{{sample}}.mosdepth.global.dist.txt"
     threads: THREADS_DEFAULT
     conda:
         "envs/variant.yaml"
@@ -604,7 +614,9 @@ rule mosdepth_coverage:
     shell:
         (
             "if [ '{RUN_ENABLE_DEPTH}' != 'True' ]; then "
-            "mkdir -p {OUTDIR}/depth && printf 'chrom\\tlength\\tbases\\tmean\\n' > {output.summary}; "
+            "mkdir -p {OUTDIR}/depth && "
+            "printf 'chrom\\tlength\\tbases\\tmean\\n' > {output.summary} && "
+            ": > {output.dist}; "
             "else "
             "mkdir -p {OUTDIR}/depth && mosdepth -t {threads} -n --fast-mode {params.prefix} {input.bam}; "
             "fi"
@@ -621,7 +633,7 @@ rule depth_per_sample:
         "envs/variant.yaml"
     run:
         Path(output.depth).parent.mkdir(parents=True, exist_ok=True)
-        if not RUN_ENABLE_DEPTH:
+        if (not RUN_ENABLE_DEPTH) or (not DEPTH_EMIT_PER_BASE_TSV):
             shell(": > {output.depth}")
         else:
             depth_flag = "-a" if DEPTH_EMIT_ALL_POSITIONS else ""
@@ -630,7 +642,9 @@ rule depth_per_sample:
 
 rule depth_summary:
     input:
-        depths=expand(f"{OUTDIR}/depth/{{sample}}.depth.tsv", sample=SAMPLES)
+        depths=expand(f"{OUTDIR}/depth/{{sample}}.depth.tsv", sample=SAMPLES),
+        mosdepth_summaries=expand(f"{OUTDIR}/depth/{{sample}}.mosdepth.summary.txt", sample=SAMPLES),
+        mosdepth_dists=expand(f"{OUTDIR}/depth/{{sample}}.mosdepth.global.dist.txt", sample=SAMPLES)
     output:
         table=f"{OUTDIR}/depth/depth_summary.tsv",
         plot=f"{OUTDIR}/depth/depth_distribution.png"
@@ -1083,6 +1097,7 @@ rule run_manifest:
             f"snpeff_database: {SNPEFF_DATABASE or 'none'}",
             f"dna_short_aligner: {DNA_SHORT_ALIGNER}",
             f"depth_emit_all_positions: {DEPTH_EMIT_ALL_POSITIONS}",
+            f"depth_emit_per_base_tsv: {DEPTH_EMIT_PER_BASE_TSV}",
             f"validation_enforce_build_match: {VALIDATE_ENFORCE_BUILD_MATCH}",
             f"validation_fail_on_warning: {VALIDATE_FAIL_ON_WARNING}",
             f"preflight_report: {OUTDIR}/docs/preflight_checks.tsv",

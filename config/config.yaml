@@ -28,6 +28,12 @@ alignment:
 depth:
   # When true, samtools depth uses -a (all positions). Disable for much smaller/faster depth files in tests.
   emit_all_positions: true
+  # When false, skip writing large per-base depth TSV files and rely on mosdepth-based summaries/plots.
+  emit_per_base_tsv: true
+  # Plot-only x-axis cap for depth distribution summary (preserves reported max depth in summary table).
+  summary_plot_max_depth: 200
+  # Used only if mosdepth summaries are unavailable and raw depth TSV fallback sampling is needed.
+  summary_plot_sample_size: 50000
 
 thresholds:
   min_base_quality: 20
