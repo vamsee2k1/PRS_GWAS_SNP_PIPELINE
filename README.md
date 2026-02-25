@@ -331,34 +331,47 @@ Interpretation notes from this test:
 
 ![PRS Distribution (1000G chr19 example)](docs/assets/readme/variant_only/prs_distribution.png)
 
-### 3) Full Mode (FASTQ -> Alignment -> Variant Calling; local smoke test)
+### 3) Full Mode (GIAB HG002 short-read DNA; practical-depth test run)
 
 Example run type:
-- `full` mode with DNA input
-- Local subset FASTQ used for fast end-to-end path validation
+- `full` mode with DNA short-read input
+- GIAB benchmark sample subset (`HG002`)
+- Example output directory: `results_giab_hg002_full_20260224_practical_depth_hg002`
 
 What this demonstrates:
-- Read QC and trimming
-- Alignment
-- Variant calling/filtering
-- Variant interpretation outputs
+- End-to-end FASTQ processing (QC -> trimming -> alignment -> duplicate marking -> variant calling/filtering)
+- Variant QC metrics and visualization from a real benchmark sample
+- Depth summary generation using `mosdepth` summaries + optional per-base depth TSV
+- Variant-to-gene mapping and enrichment output generation in `full` mode
 
-Observed test-run QC outcome (example):
-- Read retention after filtering: `94.574%`
-- Q30 fraction improved from `0.923595` to `0.949523`
+Observed test-run QC outcome (HG002 practical-depth example):
+- Read retention after filtering: `94.167%`
+- Bases retention after filtering: `93.927%`
+- Q30 fraction improved from `0.905889` to `0.933511`
 
-Observed test-run variant QC outcome (example):
-- `total_variants = 1962`
-- `snp_count = 1870`
-- `ts/tv = 1.46377`
+Observed test-run variant QC outcome (HG002 practical-depth example):
+- `total_variants = 13520`
+- `snp_count = 12556`
+- `indel_count = 905`
+- `multiallelic_count = 59`
+- `ts/tv = 1.53657`
 
-These values are from a small local test subset and are useful for pipeline validation, not clinical or cohort-level interpretation.
+Observed depth summary (same run):
+- `mean_depth = 0.089x`
+- `pct_cov_ge_1x = 8.0%`
+- `pct_cov_ge_10x = 0.0%`
+- Depth summary source: `mosdepth`
 
-![QC Before/After Summary (Full mode example)](docs/assets/readme/full/qc_before_after.png)
+Biological importance (and limits) of this full-mode example:
+- `HG002` is a widely used Genome in a Bottle benchmark sample, so this run is biologically useful for **technical validation** of variant-calling and QC behavior across the full pipeline.
+- The run confirms the pipeline preserves expected processing signals (improved post-trim read quality, plausible SNV/indel composition, usable annotation/enrichment outputs) on real sequencing-derived data.
+- Because this is a **practical-depth subset / benchmark-style test**, the enrichment output should be interpreted as a demonstration of the annotation + pathway workflow, not as disease-specific biological discovery.
 
-![Variant Type Counts (Full mode example)](docs/assets/readme/full/variant_type_counts.png)
+![QC Before/After Summary (GIAB HG002 full-mode example)](docs/assets/readme/full/qc_before_after.png)
 
-![Variant Enrichment Dotplot (Full mode example)](docs/assets/readme/full/variant_enrichment_dotplot.png)
+![Variant Type Counts (GIAB HG002 full-mode example)](docs/assets/readme/full/variant_type_counts.png)
+
+![Variant Enrichment Dotplot (GIAB HG002 full-mode example)](docs/assets/readme/full/variant_enrichment_dotplot.png)
 
 ## Notes
 
