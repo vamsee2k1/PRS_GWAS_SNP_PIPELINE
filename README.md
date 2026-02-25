@@ -31,21 +31,22 @@ All outputs are written to `results/`, and detailed documentation is in `docs/`.
 
 ## Observed Runtime (Example Test Runs)
 
-The following runtimes were observed on a local laptop test environment and are intended as **practical expectations**, not guarantees. They vary with CPU/RAM, storage, dataset size, reference indexes, and whether conda environments are already built.
+The following runtimes were measured from Snakemake logs on a local laptop and are intended as **practical expectations**, not guarantees. They vary with CPU/RAM, storage, dataset size, reference indexes, and whether conda environments are already built.
 
-These times reflect the **main workflow runs** (not one-time dataset downloads or one-time reference index creation).
+These times reflect workflow execution only (not one-time downloads or one-time reference indexing).
 
-| Mode | Example Input | Observed Time | Notes |
+| Mode | Example Input | Observed Time (Feb 24, 2026) | Notes |
 | --- | --- | --- | --- |
-| `gwas_summary` (`variant_only`) | ADVP Alzheimer GWAS TSV (`advp.variant.records.hg38.tsv`) | ~18 sec | Completed successfully; summary-stat interpretation/enrichment path |
-| `variant_only` (`vcf_interpretation`) | 1000G Phase 3 chr19 VCF | ~10 min 42 sec | Completed successfully; includes PRS branch (0 matched loci in this test) |
-| `full` (DNA smoke test) | Local FASTQ subset (`NIST7035` subset) | ~1 min 44 sec to complete variant interpretation outputs | Core QC/alignment/calling/annotation outputs completed; depth branch later became bottleneck |
-| `full` (same run, depth enabled) | Same FASTQ subset | `depth_per_sample` finished by ~2 min 49 sec; `depth_summary` failed at ~6 min 55 sec | Generated a ~39 GB depth file (`samtools depth -a`), then `depth_summary` exited (code 137) |
+| `variant_only` + `gwas_summary` | ADVP Alzheimer GWAS TSV (`advp.variant.records.hg38.tsv`) | `22 sec` | `results_advp_gwas_20260224_retest`; completed successfully |
+| `variant_only` + `vcf_interpretation` | 1KG chr19 VCF + Alzheimer PRS config | `8 min 58 sec` | `results_alzheimers_prs_1kg_chr19_20260224_retest`; major time in normalize/filter external variants |
+| `full` (DNA, long-read `minimap2`) | NIST7035 subset FASTQ | `12 min 43 sec` wall span | `results_nist7035_full_minimap2_20260224_retest`; main invocation ~`3 min`, plus later `depth_summary`/`run_manifest` rerun |
+| `full` (DNA, short-read practical-depth) | GIAB HG002 subset FASTQ | `37 min 10 sec` wall span | `results_giab_hg002_full_20260224_practical_depth_hg002`; main active runtime ~`33 min 33 sec`, plus a later `10 sec` forced depth/manifest rerun |
 
-Recommended local testing settings for `full` mode:
+Recent hotspots from those runs:
 
-- `run.enable_depth: false` for fast functional validation
-- or `depth.emit_all_positions: false` to avoid huge `samtools depth -a` outputs
+- `full` short-read HG002: `align_reads` (~24m51s) and `call_snps` (~5m49s)
+- `variant_only` VCF interpretation: `normalize_external_variants` and `filter_external_variants`
+- `full` long-read NIST7035: `depth_per_sample` and `align_reads`
 
 Additional runtime guidance for local/HPC/container setups is in `docs/REPRODUCIBLE_EXECUTION.md`.
 Alzheimer PRS model details and calculation notes are in `docs/ALZHEIMERS_PRS.md`.
@@ -126,6 +127,60 @@ For an explicit preflight validation-only check (resources, formats, build compa
 
 ```bash
 snakemake --use-conda --cores 1 --until preflight_resources
+```
+
+### Install and Run on a New PC (Verified)
+
+1. Install prerequisites: `git`, Conda/Mamba (Miniforge/Mambaforge recommended), and a Unix-like shell (Linux/macOS; Windows users should use WSL2).
+2. Clone the repository:
+
+```bash
+git clone https://github.com/vamsee2k1/PRS_GWAS_SNP_PIPELINE.git
+cd PRS_GWAS_SNP_PIPELINE
+```
+
+3. Create and activate the workflow bootstrap environment (Snakemake + mamba):
+
+```bash
+conda env create -f envs/workflow.yaml
+conda activate bioinfo-workflow
+```
+
+4. Add required local resources and inputs (these are not fully versioned in git):
+- `resources/reference/GRCh38.fa`
+- `resources/reference/Homo_sapiens.GRCh38.110.gtf`
+- `resources/reference/star_grch38_index` (RNA short-read full mode)
+- FASTQ inputs (full mode) or `paths.variants_input` VCF/CSV/TSV (variant-only mode)
+- Optional PRS weights / gene sets if you enable those branches
+
+5. Run preflight validation first (recommended):
+
+```bash
+./run_pipeline.sh --use-conda --conda-frontend mamba --cores 1 --until preflight_resources
+```
+
+6. Run the pipeline (examples):
+
+Full mode (default `config/config.yaml`):
+
+```bash
+./run_pipeline.sh --use-conda --conda-frontend mamba --cores 8 --rerun-incomplete --printshellcmds
+```
+
+Variant-only mode (VCF interpretation):
+
+```bash
+cp config/examples.mode_variant_only_vcf.yaml config/my.variant_only_vcf.yaml
+# edit config/my.variant_only_vcf.yaml and set paths.variants_input
+./run_pipeline.sh --use-conda --conda-frontend mamba --cores 8 --configfile config/my.variant_only_vcf.yaml
+```
+
+Variant-only mode (GWAS summary TSV/CSV):
+
+```bash
+cp config/examples.mode_gwas_summary.yaml config/my.gwas_summary.yaml
+# edit config/my.gwas_summary.yaml and set paths.variants_input
+./run_pipeline.sh --use-conda --conda-frontend mamba --cores 8 --configfile config/my.gwas_summary.yaml
 ```
 
 Mode-specific example configs (ready to copy and edit):

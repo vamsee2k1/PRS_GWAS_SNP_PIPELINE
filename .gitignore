@@ -24,6 +24,8 @@ resources/reference/
 resources/annotation/
 resources/prs/models/
 resources/enrichment/real/
+resources/gwas/
+resources/.DS_Store
 
 # Large ad hoc test files kept at repo root
 *.vcf.gz
