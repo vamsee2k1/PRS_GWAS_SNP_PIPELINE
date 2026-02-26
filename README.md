@@ -153,6 +153,21 @@ conda activate bioinfo-workflow
 - FASTQ inputs (full mode) or `paths.variants_input` VCF/CSV/TSV (variant-only mode)
 - Optional PRS weights / gene sets if you enable those branches
 
+Important: cloning this repository only downloads the pipeline code. Users must download reference genomes, annotations, GWAS/PRS files, and sample input data separately and place them on a local disk, external SSD, or mounted storage path that the pipeline can read.
+
+Common public download sources (examples):
+- Ensembl GRCh38 FASTA (release 110 primary assembly): `https://ftp.ensembl.org/pub/release-110/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz`
+- Ensembl GRCh38 GTF (release 110): `https://ftp.ensembl.org/pub/release-110/gtf/homo_sapiens/Homo_sapiens.GRCh38.110.gtf.gz`
+- 1000 Genomes / IGSR VCFs (example public genotype VCFs): `https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/`
+- ClinVar GRCh38 VCFs (public clinical variants): `https://ftp.ncbi.nlm.nih.gov/pub/clinvar/vcf_GRCh38/`
+- GWAS Catalog summary statistics: `https://www.ebi.ac.uk/gwas/downloads/summary-statistics`
+- PGS Catalog score files (PRS weights): `https://www.pgscatalog.org/downloads/`
+- MSigDB gene sets (registration/license may be required): `https://www.gsea-msigdb.org/gsea/msigdb`
+
+Notes:
+- The RNA `STAR` index is usually generated locally from your chosen FASTA + GTF (read-length dependent); this repository does not ship a prebuilt index.
+- After downloading, update the YAML config paths (for example `reference.fasta`, `reference.gtf`, `reference.star_index`, `paths.variants_input`, `paths.prs_weights`, `paths.gene_sets`).
+
 5. Run preflight validation first (recommended):
 
 ```bash
