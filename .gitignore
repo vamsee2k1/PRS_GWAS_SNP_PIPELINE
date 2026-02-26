@@ -40,3 +40,7 @@ config/override.*.yaml
 
 # Local workspace scratch folder used to prepare GitHub-ready copy
 github/
+
+# Web/API backend local runtime artifacts
+backend_job_runs/
+backend/api/.venv/
