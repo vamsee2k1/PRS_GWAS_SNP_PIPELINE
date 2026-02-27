@@ -35,13 +35,76 @@ The following are the current canonical real-dataset validation runs completed o
 
 All three runs passed and replace older toy/example references in this repository.
 
-| Mode | Example Input | Output Folder | Runtime (wall) | Quality Snapshot | Status |
-| --- | --- | --- | --- | --- | --- |
-| `variant_only` + `gwas_summary` | ADVP Alzheimer GWAS TSV (`advp.variant.records.hg38.tsv`) | `results_final_test_gwas_advp_20260227` | `21 sec` | `1,981` variants, `Ts/Tv=2.221`, reported AD hits present (`APOE/TOMM40` region) | PASS |
-| `variant_only` + `vcf_interpretation` | 1KG chr19 high-PRS-focused subset VCF | `results_final_test_ad_high_prs_20260227` | `1 min 9 sec` | `1,625,698` variants, `Ts/Tv=2.351`, PRS matched loci `3/83` | PASS |
-| `full` (DNA short-read) | GIAB HG002 subset FASTQ | `results_final_test_full_giab_20260227` | `6 min 24 sec` | read retention `94.17%`, `13,520` variants, `Ts/Tv=1.537` | PASS |
+| Mode | Example Input (Final) | Output Folder (Final) | Runtime (Feb 27, 2026) | Historical Runtime (Feb 24, 2026) | Quality Snapshot (Final) | Status |
+| --- | --- | --- | --- | --- | --- | --- |
+| `variant_only` + `gwas_summary` | ADVP Alzheimer GWAS TSV (`advp.variant.records.hg38.tsv`) | `results_final_test_gwas_advp_20260227` | `21 sec` | `22 sec` (`results_advp_gwas_20260224_retest`) | `1,981` variants, `Ts/Tv=2.221`, AD hits in `APOE/TOMM40` region | PASS |
+| `variant_only` + `vcf_interpretation` | 1KG chr19 high-PRS-focused subset VCF | `results_final_test_ad_high_prs_20260227` | `1 min 9 sec` | `8 min 58 sec` (`results_alzheimers_prs_1kg_chr19_20260224_retest`) | `1,625,698` variants, `Ts/Tv=2.351`, PRS matched loci `3/83` | PASS |
+| `full` (DNA short-read) | GIAB HG002 subset FASTQ | `results_final_test_full_giab_20260227` | `6 min 24 sec` | `37 min 10 sec` (`results_giab_hg002_full_20260224_practical_depth_hg002`) | read retention `94.17%`, `13,520` variants, `Ts/Tv=1.537` | PASS |
 
-Runtime values above are wall-clock durations from the corresponding final-test Snakemake logs.
+Runtime values are wall-clock durations from Snakemake logs.
+Historical runtimes are retained for comparison and represent different benchmark runs/settings; they are not strict like-for-like performance claims.
+
+### Interactive Mode Explorer
+
+<details>
+<summary><strong>GWAS Summary Mode</strong>: AD signal discovery from summary statistics</summary>
+
+Run command:
+
+```bash
+./run_pipeline.sh --use-conda --conda-frontend mamba --cores 8 --configfile config/final_tests/final_test_gwas_advp.yaml
+```
+
+Open these first:
+- `results_final_test_gwas_advp_20260227/variants/variant_association_hits.tsv`
+- `results_final_test_gwas_advp_20260227/variants/variant_qc_metrics.tsv`
+- `results_final_test_gwas_advp_20260227/variants/variant_enrichment.tsv`
+
+Preview:
+
+![GWAS Manhattan Plot](docs/assets/readme/gwas/variant_manhattan.png)
+
+</details>
+
+<details>
+<summary><strong>Variant-Only + PRS Mode</strong>: genotype interpretation + AD PRS on high-PRS-focused subset</summary>
+
+Run command:
+
+```bash
+./run_pipeline.sh --use-conda --conda-frontend mamba --cores 8 --configfile config/final_tests/final_test_ad_high_prs.yaml
+```
+
+Open these first:
+- `results_final_test_ad_high_prs_20260227/prs/prs_qc.tsv`
+- `results_final_test_ad_high_prs_20260227/prs/prs_scores.tsv`
+- `results_final_test_ad_high_prs_20260227/variants/variant_qc_metrics.tsv`
+
+Preview:
+
+![PRS Distribution](docs/assets/readme/variant_only/prs_distribution.png)
+
+</details>
+
+<details>
+<summary><strong>Full FASTQ Mode</strong>: end-to-end sequencing workflow (QC -> alignment -> variants -> interpretation)</summary>
+
+Run command:
+
+```bash
+./run_pipeline.sh --use-conda --conda-frontend mamba --cores 8 --configfile config/final_tests/final_test_full_giab.yaml
+```
+
+Open these first:
+- `results_final_test_full_giab_20260227/qc/qc_before_after.tsv`
+- `results_final_test_full_giab_20260227/depth/depth_summary.tsv`
+- `results_final_test_full_giab_20260227/variants/variant_qc_metrics.tsv`
+
+Preview:
+
+![QC Before/After](docs/assets/readme/full/qc_before_after.png)
+
+</details>
 
 Additional runtime guidance for local/HPC/container setups is in `docs/REPRODUCIBLE_EXECUTION.md`.
 Alzheimer PRS model details and calculation notes are in `docs/ALZHEIMERS_PRS.md`.
