@@ -1,0 +1,24 @@
+output_dir: results_final_test_gwas_advp_20260227
+
+run:
+  mode: variant_only
+  variant_data_mode: gwas_summary
+  assay: dna
+  read_type: short
+  threads: 8
+  use_external_variants_for_prs: true
+
+reference:
+  genome_build: GRCh38
+
+paths:
+  variants_input: INPUT_TEST_FILES/advp.variant.records.hg38.tsv
+  prs_weights: ""
+  gene_sets: resources/enrichment/real/Reactome_2022.gmt
+
+thresholds:
+  require_filter_pass: true
+
+validation:
+  enforce_build_match: true
+  fail_on_warning: false

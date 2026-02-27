@@ -119,7 +119,9 @@ The repo already includes `NOTICE` and `CITATION.cff` to support this.
 - [ ] branch protection enabled on `main`
 - [ ] first release tag created (e.g., `v0.1.0`)
 - [ ] README updated with exact repository URL
-- [ ] test runs documented for `gwas_summary`, `variant_only`, and `full`
+- [x] test runs documented for `gwas_summary`, `variant_only`, and `full`
+  - `FINAL_TEST.md`
+  - `docs/REAL_DATASET_EXAMPLES.md`
 
 ## Suggested First Release Tag
 

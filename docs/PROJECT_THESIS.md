@@ -173,6 +173,24 @@ What it validates:
 - annotation/QC/enrichment
 - manifest generation
 
+### Completed real-data rerun (2026-02-27)
+
+These three canonical runs were completed successfully and are the current publish-ready examples:
+
+- AD PRS high-PRS-focused variant-only rerun:
+  - `results_final_test_ad_high_prs_20260227`
+  - Config: `config/final_tests/final_test_ad_high_prs.yaml`
+- GWAS summary rerun:
+  - `results_final_test_gwas_advp_20260227`
+  - Config: `config/final_tests/final_test_gwas_advp.yaml`
+- Full DNA FASTQ rerun:
+  - `results_final_test_full_giab_20260227`
+  - Config: `config/final_tests/final_test_full_giab.yaml`
+
+Detailed metrics and interpretation:
+- `FINAL_TEST.md`
+- `docs/REAL_DATASET_EXAMPLES.md`
+
 ## 6. Environments and Portability
 
 This project uses layered environments:

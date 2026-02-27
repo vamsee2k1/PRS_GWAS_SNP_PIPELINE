@@ -1,0 +1,25 @@
+output_dir: results_final_test_ad_high_prs_20260227
+
+run:
+  mode: variant_only
+  variant_data_mode: vcf_interpretation
+  assay: dna
+  read_type: short
+  threads: 8
+  use_external_variants_for_prs: true
+
+reference:
+  genome_build: GRCh38
+
+paths:
+  variants_input: data/variants/alzheimers/final_tests/1kg_chr19_high_prs_top40.vcf.gz
+  prs_weights: resources/prs/models/PGS002280.txt.gz
+  gene_sets: resources/enrichment/real/Reactome_2022.gmt
+
+thresholds:
+  require_filter_pass: true
+  variant_qc_max_samples_for_genotype_metrics: 1000
+
+validation:
+  enforce_build_match: true
+  fail_on_warning: false

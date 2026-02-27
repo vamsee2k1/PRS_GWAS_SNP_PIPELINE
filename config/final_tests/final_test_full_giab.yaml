@@ -1,0 +1,30 @@
+output_dir: results_final_test_full_giab_20260227
+samplesheet: config/samples.giab_hg002.tsv
+metadata: config/metadata.giab_hg002.tsv
+
+run:
+  mode: full
+  assay: dna
+  read_type: short
+  threads: 4
+  use_external_variants_for_prs: false
+  enable_depth: true
+
+reference:
+  genome_build: GRCh38
+
+alignment:
+  dna_short_aligner: auto
+
+depth:
+  emit_all_positions: false
+  emit_per_base_tsv: true
+
+paths:
+  variants_input: ""
+  prs_weights: resources/prs/models/PGS002280.txt.gz
+  gene_sets: resources/enrichment/real/Reactome_2022.gmt
+
+validation:
+  enforce_build_match: true
+  fail_on_warning: false
