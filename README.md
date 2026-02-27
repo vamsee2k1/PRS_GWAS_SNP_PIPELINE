@@ -35,11 +35,13 @@ The following are the current canonical real-dataset validation runs completed o
 
 All three runs passed and replace older toy/example references in this repository.
 
-| Mode | Example Input | Output Folder | Status |
-| --- | --- | --- | --- |
-| `variant_only` + `gwas_summary` | ADVP Alzheimer GWAS TSV (`advp.variant.records.hg38.tsv`) | `results_final_test_gwas_advp_20260227` | PASS |
-| `variant_only` + `vcf_interpretation` | 1KG chr19 high-PRS-focused subset VCF | `results_final_test_ad_high_prs_20260227` | PASS |
-| `full` (DNA short-read) | GIAB HG002 subset FASTQ | `results_final_test_full_giab_20260227` | PASS |
+| Mode | Example Input | Output Folder | Runtime (wall) | Quality Snapshot | Status |
+| --- | --- | --- | --- | --- | --- |
+| `variant_only` + `gwas_summary` | ADVP Alzheimer GWAS TSV (`advp.variant.records.hg38.tsv`) | `results_final_test_gwas_advp_20260227` | `21 sec` | `1,981` variants, `Ts/Tv=2.221`, reported AD hits present (`APOE/TOMM40` region) | PASS |
+| `variant_only` + `vcf_interpretation` | 1KG chr19 high-PRS-focused subset VCF | `results_final_test_ad_high_prs_20260227` | `1 min 9 sec` | `1,625,698` variants, `Ts/Tv=2.351`, PRS matched loci `3/83` | PASS |
+| `full` (DNA short-read) | GIAB HG002 subset FASTQ | `results_final_test_full_giab_20260227` | `6 min 24 sec` | read retention `94.17%`, `13,520` variants, `Ts/Tv=1.537` | PASS |
+
+Runtime values above are wall-clock durations from the corresponding final-test Snakemake logs.
 
 Additional runtime guidance for local/HPC/container setups is in `docs/REPRODUCIBLE_EXECUTION.md`.
 Alzheimer PRS model details and calculation notes are in `docs/ALZHEIMERS_PRS.md`.
