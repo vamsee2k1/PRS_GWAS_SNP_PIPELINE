@@ -224,34 +224,21 @@ Real Alzheimer disease-annotated ClinVar variant run (no synthetic sample genoty
 snakemake --use-conda --cores 8 --configfile config/config.alzheimers_clinvar.yaml
 ```
 
-## Main Configuration
+## Main Configuration (Essential)
 
 - `run.mode`: `full`, `variant_only`, `vcf_interpretation`, or `gwas_summary`
-- `run.variant_data_mode`: `auto`, `vcf_interpretation`, `gwas_summary`
-- `run.assay`: `dna` or `rna`
-- `run.read_type`: `short` or `long`
-- `run.enable_depth`: enable/disable depth outputs for quick tests vs production runs
 - `reference.fasta`: reference genome FASTA
 - `reference.gtf`: gene annotation GTF
-- `reference.star_index`: required for RNA short-read mode
-- `alignment.dna_short_aligner`: `auto`, `bwa_mem2`, `bwa`, `minimap2_sr`
-- `depth.emit_all_positions`: use `samtools depth -a` (large output) vs covered positions only
-- `paths.variants_input`: optional external `VCF/VCF.GZ/CSV/TSV`
-- `paths.prs_weights`: PRS model file (PGS Catalog or simple TSV)
-- `paths.gene_sets`: enrichment GMT file
-- `annotation.method`: `overlap` or `snpeff`
-- `annotation.snpeff_database`: required when `annotation.method=snpeff`
-- `prs.weights_format`: `auto`, `pgs_catalog`, or `simple_tsv`
-- `prs.allow_ambiguous_strand`: include/exclude ambiguous A/T and C/G SNPs
-- `validation.enforce_build_match`: fail preflight when detected VCF build mismatches expected reference build
-- `validation.fail_on_warning`: treat preflight warnings as hard failures
-- `thresholds.min_variant_depth`: optional INFO/DP filter for variant records
-- `thresholds.require_filter_pass`: require `FILTER=PASS` for external VCF filtering
-- `thresholds.de_padj`: DE adjusted p-value cutoff (default `0.05`)
-- `thresholds.de_abs_log2fc`: DE effect-size cutoff (default `1.0`)
-- `thresholds.enrichment_qvalue`: enrichment q-value/FDR cutoff (default `0.05`)
-- `thresholds.variant_assoc_pvalue`: variant association cutoff (default `5e-8`)
-- `thresholds.variant_assoc_abs_effect`: variant association effect cutoff (default `0.0`)
+- `paths.variants_input`: required for variant-only/GWAS modes (`VCF/VCF.GZ/CSV/TSV`)
+- `paths.prs_weights`: optional PRS model file
+- `paths.gene_sets`: GMT for enrichment
+
+Mode-specific essentials:
+- `full` DNA: `run.assay: dna`, `run.read_type: short|long`
+- RNA short-read: `reference.star_index`
+- strict compatibility checks: `validation.enforce_build_match: true` (recommended)
+
+Advanced tuning (aligner, thresholds, PRS harmonization, depth behavior) is available in `config/config.yaml`.
 
 ## Reproducibility Features
 
@@ -261,38 +248,27 @@ snakemake --use-conda --cores 8 --configfile config/config.alzheimers_clinvar.ya
 - Early preflight validation report: `results/docs/preflight_checks.tsv`
 - Run metadata: `results/docs/run_manifest.txt`
 
-## Output Structure
+## Output Structure (Essential)
 
-- `results/qc/`: FastQC + MultiQC + before/after QC summary
-- `results/qc/alignment/`: per-sample alignment QC (`samtools flagstat`, `samtools stats`)
-- `results/trimmed/`: filtered reads and fastp reports
-- `results/alignment/`: sorted BAM and BAM index
-- `results/depth/`: depth files, summary table, depth plot, mosdepth summaries
-- `results/variants/`: called/filtered/final VCFs
-- `results/variants/snpeff_summary.html`: optional `snpEff` consequence annotation report (`annotation.method=snpeff`)
-- `results/variants/variant_qc_metrics.tsv`: SNP/indel counts, Ts/Tv, QUAL/DP/GQ summary metrics
-- `results/variants/sample_missingness.tsv`: per-sample genotype missingness
-- `results/variants/variant_type_counts.png`: variant class counts
-- `results/variants/variant_qual_distribution.png`: QUAL histogram
-- `results/variants/variant_dp_distribution.png`: DP histogram
-- `results/variants/variant_gq_distribution.png`: GQ histogram
-- `results/variants/variant_het_allele_balance.png`: heterozygous allele-balance (AD)
-- `results/variants/variant_missingness_by_sample.png`: sample missingness plot
-- `results/variants/annotated_variants.tsv`: per-variant functional class + mapped genes
-- `results/variants/variant_genes.tsv`: genes hit by variants (for biology/enrichment)
-- `results/variants/variant_association_hits.tsv`: significant variants by threshold
-- `results/variants/variant_functional_classes.png`: functional-class distribution
-- `results/variants/variant_chromosome_counts.png`: chromosome-level variant counts
-- `results/variants/variant_volcano.png`: association volcano (or proxy prioritization from QUAL/AF/clinical-significance when GWAS p/effect are absent)
-- `results/variants/variant_manhattan.png`: Manhattan plot (reported p-values or proxy ranking)
-- `results/variants/variant_qq.png`: QQ plot for GWAS-style reported p-values
-- `results/variants/variant_heatmap_top.png`: top-variant genotype/dosage heatmap; falls back to numeric variant-feature heatmap when sample genotype columns are unavailable
-- `results/variants/variant_enrichment.tsv` + `variant_enrichment_dotplot.png`: pathway enrichment from variant-mapped genes
-- `results/transcripts/`: StringTie transcripts + gene counts (RNA)
-- `results/dge/`: DESeq2 result tables + volcano + heatmap (RNA)
-- `results/enrichment/`: enrichment table + dotplot (RNA)
-- `results/prs/`: PRS score output + PRS summary table + PRS QC + PRS distribution plot
-- `results/docs/`: run manifest
+Check these first in every run:
+- `results/docs/preflight_checks.tsv`
+- `results/docs/run_manifest.txt`
+- `results/variants/variant_qc_metrics.tsv`
+- `results/variants/annotated_variants.tsv`
+- `results/variants/variant_association_hits.tsv`
+- `results/variants/variant_enrichment.tsv` + `variant_enrichment_dotplot.png`
+
+If PRS is enabled:
+- `results/prs/prs_qc.tsv`
+- `results/prs/prs_scores.tsv`
+- `results/prs/prs_distribution.png`
+
+If full FASTQ mode is used:
+- `results/qc/qc_before_after.tsv` + `qc_before_after.png`
+- `results/alignment/` (BAM/BAM index)
+- `results/depth/depth_summary.tsv` + `depth_distribution.png`
+
+For full artifact inventory, see `docs/PIPELINE_DETAILS.md` and `docs/REAL_DATASET_EXAMPLES.md`.
 
 ## Example Results (From Real Test Runs)
 
