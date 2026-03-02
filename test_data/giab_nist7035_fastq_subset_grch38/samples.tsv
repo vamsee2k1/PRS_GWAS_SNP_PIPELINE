@@ -1,0 +1,2 @@
+sample	fastq_1	fastq_2
+NIST7035	test_data/giab_nist7035_fastq_subset_grch38/giab_nist7035_subset_R1.fastq.gz	test_data/giab_nist7035_fastq_subset_grch38/giab_nist7035_subset_R2.fastq.gz

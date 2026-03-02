@@ -1,8 +1,8 @@
-output_dir: results_test_data_variant_vcf
+output_dir: results_test_data_niagads_advp_ad_gwas_hg38
 
 run:
   mode: variant_only
-  variant_data_mode: vcf_interpretation
+  variant_data_mode: gwas_summary
   assay: dna
   read_type: short
   threads: 4
@@ -11,8 +11,8 @@ reference:
   genome_build: GRCh38
 
 paths:
-  variants_input: test_data/variant_vcf/real_nist7035_small_grch38.vcf.gz
-  prs_weights: resources/prs/models/PGS002280.txt.gz
+  variants_input: test_data/niagads_advp_ad_gwas_hg38/niagads_advp_ad_variant_records_hg38.tsv
+  prs_weights: ""
   gene_sets: resources/enrichment/real/Reactome_2022.gmt
 
 validation:

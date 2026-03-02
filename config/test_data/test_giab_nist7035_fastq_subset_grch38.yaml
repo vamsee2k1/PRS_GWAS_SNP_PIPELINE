@@ -1,6 +1,6 @@
-output_dir: results_test_data_full_mode
-samplesheet: test_data/full_mode/samples.tsv
-metadata: test_data/full_mode/metadata.tsv
+output_dir: results_test_data_giab_nist7035_fastq_subset_grch38
+samplesheet: test_data/giab_nist7035_fastq_subset_grch38/samples.tsv
+metadata: test_data/giab_nist7035_fastq_subset_grch38/metadata.tsv
 
 run:
   mode: full

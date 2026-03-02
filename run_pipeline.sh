@@ -21,14 +21,14 @@ if [[ " $* " != *" --runtime-source-cache-path "* ]]; then
   extra_args+=(--runtime-source-cache-path "$runtime_source_cache")
 fi
 
-loading_args=()
+loading_cmd=(python3 workflow/scripts/run_with_loading.py)
 # Default to concise terminal progress. Set PIPELINE_VERBOSE=1 for full streaming output.
 if [[ "${PIPELINE_VERBOSE:-0}" != "1" ]]; then
-  loading_args+=(--clean-snakemake)
+  loading_cmd+=(--clean-snakemake)
 fi
 
 if command -v snakemake >/dev/null 2>&1; then
-  python3 workflow/scripts/run_with_loading.py "${loading_args[@]}" -- snakemake "${extra_args[@]}" "$@"
+  "${loading_cmd[@]}" -- snakemake "${extra_args[@]}" "$@"
 else
-  python3 workflow/scripts/run_with_loading.py "${loading_args[@]}" -- conda run -n bioinfo-workflow snakemake "${extra_args[@]}" "$@"
+  "${loading_cmd[@]}" -- conda run -n bioinfo-workflow snakemake "${extra_args[@]}" "$@"
 fi
