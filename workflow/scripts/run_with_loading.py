@@ -56,7 +56,8 @@ class SnakemakeCleanFormatter:
     STEP_RE = re.compile(r"^\d+\s+of\s+\d+\s+steps\s+\(\d+%\)\s+done\s*$")
     EXECUTE_RE = re.compile(r"^Execute\s+\d+\s+jobs\.\.\.\s*$")
     ERROR_RE = re.compile(
-        r"^(Error in rule|RuleException:|WorkflowError:|CalledProcessError|Cannot convert input table|Exiting because a job execution failed)"
+        r"(Error in rule|RuleException:|WorkflowError:|CalledProcessError|Cannot convert input table|Exiting because a job execution failed|\b\w*Error\b|Exception)",
+        re.IGNORECASE,
     )
     TOTAL_RE = re.compile(r"^\s*total\s+(\d+)\s*$")
 
@@ -104,24 +105,6 @@ class SnakemakeCleanFormatter:
             self.pending_timestamp = ""
             return f"Total jobs: {m.group(1)}\n"
 
-        if txt.startswith("Config file "):
-            self.pending_timestamp = ""
-            return f"{txt}\n"
-        if txt.startswith("Assuming unrestricted shared filesystem usage."):
-            self.pending_timestamp = ""
-            return f"{txt}\n"
-        if txt.startswith("host: "):
-            self.pending_timestamp = ""
-            return f"{txt}\n"
-        if txt.startswith("Building DAG of jobs..."):
-            self.pending_timestamp = ""
-            return f"{txt}\n"
-        if txt.startswith("Using shell: "):
-            self.pending_timestamp = ""
-            return f"{txt}\n"
-        if txt.startswith("Provided cores: "):
-            self.pending_timestamp = ""
-            return f"{txt}\n"
         if txt.startswith("Complete log(s): "):
             self.pending_timestamp = ""
             return f"{txt}\n"
@@ -186,6 +169,14 @@ def main():
     if last_was_spinner:
         clear_spinner()
     t.join(timeout=0.2)
+    elapsed = int(time.time() - start)
+    mins = elapsed // 60
+    secs = elapsed % 60
+    if proc.returncode == 0:
+        sys.stdout.write(f"Elapsed: {mins:02d}:{secs:02d}\n")
+    else:
+        sys.stdout.write(f"FAILED after: {mins:02d}:{secs:02d}\n")
+    sys.stdout.flush()
     return proc.returncode
 
 

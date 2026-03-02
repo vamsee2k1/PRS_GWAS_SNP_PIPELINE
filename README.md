@@ -259,6 +259,12 @@ ai:
   --config output_dir=results_full_mode
 ```
 
+Terminal output behavior:
+
+- `./run_pipeline.sh` (recommended) uses clean mode by default: job start/done + step `%` + final elapsed time.
+- Full rule-level details and warnings remain in `.snakemake/log/...`.
+- Use `PIPELINE_VERBOSE=1` to stream full Snakemake output in terminal.
+
 Useful run options:
 
 ```bash
