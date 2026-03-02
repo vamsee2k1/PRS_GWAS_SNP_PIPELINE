@@ -145,7 +145,6 @@ Optional resources:
 
 Important:
 
-- Users do not convert FASTQ/VCF/TSV into YAML.
 - YAML files only store configuration and paths.
 - Resources can be in `resources/` or any absolute path you provide in YAML.
 
