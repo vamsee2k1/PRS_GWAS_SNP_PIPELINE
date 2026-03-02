@@ -7,18 +7,6 @@
 - This project is in active, continued development with planned improvements in robustness, usability, and expanded disease/resource coverage.
 - Current outputs are reproducible and publication-ready for documented workflows; roadmap expansion is ongoing.
 
-## Release and Versioning
-
-- Current software version: `0.1.0` (`VERSION`)
-- Changelog: `CHANGELOG.md`
-- Citation metadata: `CITATION.cff`
-- Release engineering guide: `docs/GITHUB_PUBLISHING.md`
-
-Helpful command:
-
-```bash
-./run_pipeline.sh --version
-```
 
 ## Important Use Notice
 
