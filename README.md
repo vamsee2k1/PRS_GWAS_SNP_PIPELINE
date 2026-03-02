@@ -1,5 +1,12 @@
 # Reproducible Bioinformatics Pipeline (DNA/RNA + PRS + AI)
 
+## Project Status
+
+- AI integration is implemented (QC anomaly detection, variant prioritization, and explainability reports).
+- The pipeline is production-usable for current supported modes and test datasets.
+- This project is in active, continued development with planned improvements in robustness, usability, and expanded disease/resource coverage.
+- Current outputs are reproducible and publication-ready for documented workflows; roadmap expansion is ongoing.
+
 ## 1) Problem and Market Gap
 
 Many genomics users can run individual tools, but still struggle with:
