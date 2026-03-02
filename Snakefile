@@ -65,6 +65,19 @@ VALIDATION_CFG = config.get("validation", {})
 VALIDATE_ENFORCE_BUILD_MATCH = bool(VALIDATION_CFG.get("enforce_build_match", True))
 VALIDATE_FAIL_ON_WARNING = bool(VALIDATION_CFG.get("fail_on_warning", False))
 
+AI_CFG = config.get("ai", {})
+AI_ENABLED = bool(AI_CFG.get("enabled", True))
+AI_EXPLAINER = AI_ENABLED and bool(AI_CFG.get("explainer", True))
+AI_QC_ANOMALY = AI_ENABLED and bool(AI_CFG.get("qc_anomaly", True))
+AI_VARIANT_PRIORITIZATION = AI_ENABLED and bool(AI_CFG.get("variant_prioritization", True))
+AI_TOP_N = int(AI_CFG.get("top_n", 50))
+AI_TRAIT_CONTEXT = str(AI_CFG.get("trait_context", "")).strip()
+AI_PRIORITY_GENES = AI_CFG.get("priority_genes", [])
+if isinstance(AI_PRIORITY_GENES, list):
+    AI_PRIORITY_GENES_CSV = ",".join([str(g).strip() for g in AI_PRIORITY_GENES if str(g).strip()])
+else:
+    AI_PRIORITY_GENES_CSV = str(AI_PRIORITY_GENES).strip()
+
 if MODE_RAW in {"vcf_interpretation", "gwas_summary"}:
     MODE = "variant_only"
     VARIANT_DATA_MODE = MODE_RAW
@@ -184,6 +197,20 @@ def select_dna_short_aligner(ref_path):
     return DNA_SHORT_ALIGNER
 
 
+def qc_before_after_table_path():
+    return f"{OUTDIR}/qc/qc_before_after.tsv" if MODE != "variant_only" else ""
+
+
+def depth_summary_table_path():
+    if MODE == "variant_only" or not RUN_ENABLE_DEPTH:
+        return ""
+    return f"{OUTDIR}/depth/depth_summary.tsv"
+
+
+def prs_qc_table_path():
+    return f"{OUTDIR}/prs/prs_qc.tsv" if PRS_WEIGHTS else ""
+
+
 def core_targets():
     targets = [f"{OUTDIR}/docs/preflight_checks.tsv"]
 
@@ -274,6 +301,25 @@ def core_targets():
                 f"{OUTDIR}/prs/prs_distribution.png",
             ]
         )
+
+    if AI_ENABLED:
+        if AI_QC_ANOMALY:
+            targets.extend(
+                [
+                    f"{OUTDIR}/docs/ai/ai_qc_anomalies.tsv",
+                    f"{OUTDIR}/docs/ai/ai_qc_anomaly_report.md",
+                ]
+            )
+        if AI_VARIANT_PRIORITIZATION:
+            targets.extend(
+                [
+                    f"{OUTDIR}/docs/ai/ai_variant_prioritization.tsv",
+                    f"{OUTDIR}/docs/ai/ai_variant_prioritization_top.png",
+                    f"{OUTDIR}/docs/ai/ai_variant_prioritization_report.md",
+                ]
+            )
+        if AI_EXPLAINER:
+            targets.append(f"{OUTDIR}/docs/ai/ai_explainer.md")
 
     return targets
 
@@ -1068,6 +1114,92 @@ if PRS_WEIGHTS:
             "--sscore {output.sscore} --out-table {output.table} --out-plot {output.plot}"
 
 
+if AI_ENABLED and AI_QC_ANOMALY:
+    rule ai_qc_anomaly:
+        input:
+            variant_metrics=f"{OUTDIR}/variants/variant_qc_metrics.tsv",
+            preflight=f"{OUTDIR}/docs/preflight_checks.tsv"
+        output:
+            table=f"{OUTDIR}/docs/ai/ai_qc_anomalies.tsv",
+            report=f"{OUTDIR}/docs/ai/ai_qc_anomaly_report.md"
+        params:
+            qc_before_after=qc_before_after_table_path(),
+            depth_summary=depth_summary_table_path()
+        conda:
+            "envs/python_plot.yaml"
+        shell:
+            "mkdir -p {OUTDIR}/docs/ai && "
+            "python workflow/scripts/ai_qc_anomaly.py "
+            "--variant-metrics {input.variant_metrics} "
+            "--preflight '{input.preflight}' "
+            "--qc-before-after '{params.qc_before_after}' "
+            "--depth-summary '{params.depth_summary}' "
+            "--out-table {output.table} "
+            "--out-report {output.report}"
+
+
+if AI_ENABLED and AI_VARIANT_PRIORITIZATION:
+    rule ai_variant_prioritization:
+        input:
+            annotated=f"{OUTDIR}/variants/annotated_variants.tsv",
+            association=f"{OUTDIR}/variants/variant_association_hits.tsv"
+        output:
+            table=f"{OUTDIR}/docs/ai/ai_variant_prioritization.tsv",
+            plot=f"{OUTDIR}/docs/ai/ai_variant_prioritization_top.png",
+            report=f"{OUTDIR}/docs/ai/ai_variant_prioritization_report.md"
+        params:
+            top_n=AI_TOP_N,
+            trait_context=AI_TRAIT_CONTEXT,
+            priority_genes=AI_PRIORITY_GENES_CSV
+        conda:
+            "envs/python_plot.yaml"
+        shell:
+            "mkdir -p {OUTDIR}/docs/ai && "
+            "python workflow/scripts/ai_variant_prioritization.py "
+            "--annotated {input.annotated} "
+            "--association {input.association} "
+            "--top-n {params.top_n} "
+            "--trait-context '{params.trait_context}' "
+            "--priority-genes '{params.priority_genes}' "
+            "--out-table {output.table} "
+            "--out-plot {output.plot} "
+            "--out-report {output.report}"
+
+
+if AI_ENABLED and AI_EXPLAINER:
+    rule ai_explainer:
+        input:
+            variant_metrics=f"{OUTDIR}/variants/variant_qc_metrics.tsv",
+            association=f"{OUTDIR}/variants/variant_association_hits.tsv",
+            enrichment=f"{OUTDIR}/variants/variant_enrichment.tsv",
+            preflight=f"{OUTDIR}/docs/preflight_checks.tsv"
+        output:
+            report=f"{OUTDIR}/docs/ai/ai_explainer.md"
+        params:
+            mode=MODE,
+            analysis_mode=ACTIVE_VARIANT_DATA_MODE,
+            trait_context=AI_TRAIT_CONTEXT,
+            prs_qc=prs_qc_table_path(),
+            anomaly_table=f"{OUTDIR}/docs/ai/ai_qc_anomalies.tsv" if AI_QC_ANOMALY else "",
+            prioritization_table=f"{OUTDIR}/docs/ai/ai_variant_prioritization.tsv" if AI_VARIANT_PRIORITIZATION else ""
+        conda:
+            "envs/python_plot.yaml"
+        shell:
+            "mkdir -p {OUTDIR}/docs/ai && "
+            "python workflow/scripts/ai_explainer.py "
+            "--variant-metrics {input.variant_metrics} "
+            "--association {input.association} "
+            "--enrichment {input.enrichment} "
+            "--preflight '{input.preflight}' "
+            "--prs-qc '{params.prs_qc}' "
+            "--anomaly-table '{params.anomaly_table}' "
+            "--prioritization-table '{params.prioritization_table}' "
+            "--mode '{params.mode}' "
+            "--analysis-mode '{params.analysis_mode}' "
+            "--trait-context '{params.trait_context}' "
+            "--out-report {output.report}"
+
+
 rule run_manifest:
     input:
         core_targets()
@@ -1111,6 +1243,13 @@ rule run_manifest:
             f"variant_assoc_abs_effect_threshold: {VAR_ASSOC_ABS_EFFECT}",
             f"variant_heatmap_top_n: {VAR_HEATMAP_TOP_N}",
             f"gene_sets: {GENE_SETS or 'none'}",
+            f"ai_enabled: {AI_ENABLED}",
+            f"ai_explainer: {AI_EXPLAINER}",
+            f"ai_qc_anomaly: {AI_QC_ANOMALY}",
+            f"ai_variant_prioritization: {AI_VARIANT_PRIORITIZATION}",
+            f"ai_top_n: {AI_TOP_N}",
+            f"ai_trait_context: {AI_TRAIT_CONTEXT or 'none'}",
+            f"ai_priority_genes: {AI_PRIORITY_GENES_CSV or 'default'}",
         ]
         Path(output.manifest).parent.mkdir(parents=True, exist_ok=True)
         with open(output.manifest, "w", encoding="utf-8") as fh:

@@ -15,7 +15,9 @@ results*/
 
 # Local downloaded/test data
 data/
+data
 INPUT_TEST_FILES/
+INPUT_TEST_FILES
 SRR1766493/
 *.sra
 
@@ -26,6 +28,7 @@ resources/prs/models/
 resources/enrichment/real/
 resources/gwas/
 resources/.DS_Store
+resources
 
 # Large ad hoc test files kept at repo root
 *.vcf.gz

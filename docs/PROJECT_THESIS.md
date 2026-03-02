@@ -140,6 +140,16 @@ Interpretation rule:
 
 - low matched-model-variant rate indicates limited interpretability of absolute PRS values.
 
+## 5.6 AI-Assisted Analysis Layer
+
+An optional AI layer was integrated to improve interpretability and triage without changing core scientific computations:
+
+- `ai_explainer.py`: generates narrative summaries from primary output tables.
+- `ai_qc_anomaly.py`: detects quality anomalies using heuristic thresholds.
+- `ai_variant_prioritization.py`: ranks variants by a composite score built from association, effect size, functional class, clinical signal, and priority-gene context.
+
+These outputs are additive and written to `results/docs/ai/`. The run manifest records `ai_*` configuration fields for reproducibility.
+
 ## 6. Results
 
 ## 6.1 Runtime Results with Timestamps and Historical Context
@@ -168,6 +178,19 @@ Preflight warning context:
 
 - GWAS run: missing raw `REF` column and intentionally disabled PRS weights in summary mode.
 - Full run: missing `bwa-mem2` index at path; automatic fallback to classic `bwa`.
+
+## 6.4 AI Output Artifacts
+
+When `ai.enabled: true`:
+
+- `docs/ai/ai_explainer.md`
+- `docs/ai/ai_qc_anomalies.tsv`
+- `docs/ai/ai_qc_anomaly_report.md`
+- `docs/ai/ai_variant_prioritization.tsv`
+- `docs/ai/ai_variant_prioritization_top.png`
+- `docs/ai/ai_variant_prioritization_report.md`
+
+These files provide analyst-facing interpretation support and triage recommendations while preserving deterministic core tables for downstream statistical review.
 
 ## 6.3 Figure Portfolio and Interpretation
 
@@ -302,4 +325,3 @@ Planned next steps:
 12. PGS Catalog downloads: https://www.pgscatalog.org/downloads/
 13. MSigDB collections: https://www.gsea-msigdb.org/gsea/msigdb
 14. Bellenguez et al. AD PRS model reference (as captured in `prs_qc.tsv`): doi:10.1038/s41588-022-01024-z
-

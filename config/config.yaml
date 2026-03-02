@@ -87,6 +87,32 @@ validation:
   # If true, treat any preflight WARNING as a hard failure.
   fail_on_warning: false
 
+ai:
+  # Master switch for AI add-on outputs.
+  enabled: true
+  # 1) Natural-language result explanation from generated tables.
+  explainer: true
+  # 2) QC anomaly detection from variant/QC/depth/preflight metrics.
+  qc_anomaly: true
+  # 3) Variant prioritization using association + annotation features.
+  variant_prioritization: true
+  # Number of top prioritized variants to show in AI plot/report.
+  top_n: 50
+  # Free-text context included in AI reports.
+  trait_context: "Alzheimer disease example context"
+  # Optional list used for gene-context weighting in prioritization.
+  priority_genes:
+    - APOE
+    - TOMM40
+    - TREM2
+    - SORL1
+    - ABCA7
+    - BIN1
+    - CLU
+    - CR1
+    - PICALM
+    - PTK2B
+
 deseq2:
   design_formula: "~ condition"
   contrast: "condition,case,control"
