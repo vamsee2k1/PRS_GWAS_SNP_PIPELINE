@@ -9,20 +9,20 @@ conda env create -f envs/workflow.yaml
 conda activate bioinfo-workflow
 ```
 
-Run a ready test directly:
+Run with your own dataset config:
 
 ```bash
-# Variant mode (GWAS summary TSV)
+# Example (use your config file)
 ./run_pipeline.sh --use-conda --cores 8 \
-  --configfile config/final_tests/final_test_gwas_advp.yaml \
-  --config output_dir=results_test_variant_gwas
+  --configfile config/my_run.yaml \
+  --config output_dir=results_my_run
 ```
 
 ```bash
-# Full mode (GIAB HG002 FASTQ pair)
+# Optional: override input paths at runtime
 ./run_pipeline.sh --use-conda --cores 8 \
-  --configfile config/final_tests/final_test_full_giab.yaml \
-  --config output_dir=results_test_full_giab
+  --configfile config/my_run.yaml \
+  --config paths.variants_input=<input_vcf_or_tsv_or_csv> reference.fasta=<ref_fasta> reference.gtf=<ref_gtf>
 ```
 
 Important:
@@ -130,7 +130,7 @@ Historical runtimes are retained for comparison and represent different benchmar
 Run command:
 
 ```bash
-./run_pipeline.sh --use-conda --conda-frontend mamba --cores 8 --configfile config/final_tests/final_test_gwas_advp.yaml
+./run_pipeline.sh --use-conda --cores 8 --configfile config/my_gwas_run.yaml
 ```
 
 Open these first:
@@ -150,7 +150,7 @@ Preview:
 Run command:
 
 ```bash
-./run_pipeline.sh --use-conda --conda-frontend mamba --cores 8 --configfile config/final_tests/final_test_ad_high_prs.yaml
+./run_pipeline.sh --use-conda --cores 8 --configfile config/my_variant_run.yaml
 ```
 
 Open these first:
@@ -170,7 +170,7 @@ Preview:
 Run command:
 
 ```bash
-./run_pipeline.sh --use-conda --conda-frontend mamba --cores 8 --configfile config/final_tests/final_test_full_giab.yaml
+./run_pipeline.sh --use-conda --cores 8 --configfile config/my_full_run.yaml
 ```
 
 Open these first:
@@ -245,17 +245,40 @@ Detailed split flowcharts (preflight/mode routing, full mode, and variant-only +
 conda activate bioinfo-workflow
 
 # 2) Run any mode config
-./run_pipeline.sh --use-conda --cores 8 --configfile config/final_tests/final_test_gwas_advp.yaml
+./run_pipeline.sh --use-conda --cores 8 --configfile config/my_run.yaml
 ```
 
 Useful options:
 
 ```bash
 # Dry-run only
-./run_pipeline.sh -n --use-conda --cores 8 --configfile config/final_tests/final_test_gwas_advp.yaml
+./run_pipeline.sh -n --use-conda --cores 8 --configfile config/my_run.yaml
 
 # Preflight validation only
-./run_pipeline.sh --use-conda --cores 1 --until preflight_resources --configfile config/final_tests/final_test_gwas_advp.yaml
+./run_pipeline.sh --use-conda --cores 1 --until preflight_resources --configfile config/my_run.yaml
+```
+
+### Optional: Run Bundled `test_data`
+
+Small test datasets for all 3 modes are included in `test_data/`:
+- `test_data/variant_gwas/advp.variant.records.hg38.tsv`
+- `test_data/variant_vcf/real_nist7035_small_grch38.vcf.gz`
+- `test_data/full_mode/NIST7035_sub_R1.fastq.gz` and `NIST7035_sub_R2.fastq.gz`
+
+Ready test configs:
+- `config/test_data/test_variant_gwas.yaml`
+- `config/test_data/test_variant_vcf.yaml`
+- `config/test_data/test_full_mode.yaml`
+
+```bash
+# GWAS mode test
+./run_pipeline.sh --use-conda --cores 8 --configfile config/test_data/test_variant_gwas.yaml
+
+# VCF mode test
+./run_pipeline.sh --use-conda --cores 8 --configfile config/test_data/test_variant_vcf.yaml
+
+# Full mode test
+./run_pipeline.sh --use-conda --cores 8 --configfile config/test_data/test_full_mode.yaml
 ```
 
 ### Install and Run on a New PC (Verified)
@@ -300,7 +323,7 @@ Notes:
 5. Run preflight validation first (recommended):
 
 ```bash
-./run_pipeline.sh --use-conda --conda-frontend mamba --cores 1 --until preflight_resources
+./run_pipeline.sh --use-conda --cores 1 --until preflight_resources
 ```
 
 6. Run the pipeline (examples):
@@ -308,32 +331,39 @@ Notes:
 Full mode (default `config/config.yaml`):
 
 ```bash
-./run_pipeline.sh --use-conda --conda-frontend mamba --cores 8 --rerun-incomplete --printshellcmds
+./run_pipeline.sh --use-conda --cores 8 --rerun-incomplete
 ```
 
 Variant-only mode (VCF interpretation):
 
 ```bash
-./run_pipeline.sh --use-conda --conda-frontend mamba --cores 8 --configfile config/final_tests/final_test_ad_high_prs.yaml
+./run_pipeline.sh --use-conda --cores 8 \
+  --configfile config/my_variant_run.yaml \
+  --config paths.variants_input=<input_vcf>
 ```
 
 Variant-only mode (GWAS summary TSV/CSV):
 
 ```bash
-./run_pipeline.sh --use-conda --conda-frontend mamba --cores 8 --configfile config/final_tests/final_test_gwas_advp.yaml
+./run_pipeline.sh --use-conda --cores 8 \
+  --configfile config/my_gwas_run.yaml \
+  --config paths.variants_input=<input_tsv_or_csv>
 ```
 
-Full DNA mode (GIAB HG002 final test config):
+Full DNA mode (FASTQ input):
 
 ```bash
-./run_pipeline.sh --use-conda --conda-frontend mamba --cores 8 --configfile config/final_tests/final_test_full_giab.yaml
+./run_pipeline.sh --use-conda --cores 8 \
+  --configfile config/my_full_run.yaml \
+  --config samplesheet=<samples_tsv> metadata=<metadata_tsv>
 ```
 
 Mode-specific example configs (ready to copy and edit):
 
-- `config/final_tests/final_test_gwas_advp.yaml`
-- `config/final_tests/final_test_ad_high_prs.yaml`
-- `config/final_tests/final_test_full_giab.yaml`
+- `config/examples.mode_gwas_summary.yaml`
+- `config/examples.mode_variant_only_vcf.yaml`
+- `config/examples.mode_full_dna_fastq.yaml`
+- `config/test_data/*.yaml` (only for optional built-in tests)
 
 Variant-only mode (VCF/CSV/TSV to filtered variants + interpretation):
 

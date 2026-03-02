@@ -37,6 +37,13 @@ resources
 *.bam
 *.bai
 
+# Keep small, curated test fixtures tracked under test_data/
+!test_data/
+!test_data/**/*.vcf.gz
+!test_data/**/*.vcf.gz.tbi
+!test_data/**/*.fastq.gz
+!test_data/**/*.tsv
+
 # Local config overrides
 config/*_local.yaml
 config/override.*.yaml
