@@ -18,14 +18,52 @@ This pipeline addresses that gap with one reproducible Snakemake workflow that s
 
 ## 2) Biological Significance
 
-The workflow is designed to convert raw sequencing or external variant data into biologically meaningful outputs used in translational genomics:
+This project is biologically meaningful because it integrates three evidence layers that are usually separated:
 
-- disease-associated variant prioritization (for example AD-associated loci)
-- variant-to-gene mapping and pathway enrichment
-- quality-aware interpretation using QC metrics and association plots
-- optional PRS harmonization/scoring from genotype-bearing VCFs
+- inherited susceptibility (GWAS/VCF variant interpretation),
+- dynamic molecular response (RNA differential expression when RNA branch is used),
+- systems-level interpretation (pathway enrichment from variant-mapped genes and/or DE genes).
 
-This helps users move from data processing to biological interpretation with traceable, reproducible outputs.
+### 2.1 PRS Significance
+
+Polygenic risk scoring captures cumulative small-effect variant burden across the genome, which is essential for complex traits where single loci do not explain most risk.
+
+In practical terms, this pipeline’s PRS branch is designed for:
+
+- cohort-level relative risk stratification (not diagnosis),
+- transparent harmonization and coverage QC,
+- explicit reporting when matched model loci are too low for strong interpretation.
+
+This is especially important for Alzheimer workflows, where interpretation should move beyond single-locus framing and remain explicit about model overlap and portability limits.
+
+### 2.2 Differential Expression Significance
+
+Differential expression adds a biological layer that variants alone cannot provide: current molecular activity.
+
+When RNA mode is used, DE results support:
+
+- identification of condition-associated transcriptional shifts,
+- pathway-level interpretation of active biological processes,
+- cross-checking whether genetic risk-prioritized pathways also show expression perturbation.
+
+This helps connect inherited risk architecture to context-specific molecular state.
+
+### 2.3 Why Integrated Pipelines Matter Biologically
+
+The key biological advantage is evidence convergence:
+
+1. variant/GWAS branch identifies where inherited signal exists,
+2. annotation maps signal to genes/features,
+3. DE/enrichment branches test whether related biology is active,
+4. PRS summarizes aggregate inherited burden.
+
+Convergence across these layers produces stronger mechanistic hypotheses than any single layer alone, while preserving reproducibility through preflight checks, run manifests, and environment isolation.
+
+### 2.4 Deep-Dive Research Notes
+
+For a detailed research-style deep dive with references on PRS, DE, integrated interpretation, and limitations, see:
+
+- `docs/BIOLOGICAL_SIGNIFICANCE_DEEP_DIVE.md`
 
 ## 3) Pipeline Flowchart
 
@@ -312,6 +350,7 @@ Notes:
 Documentation index:
 
 - `docs/PIPELINE_DETAILS.md`
+- `docs/BIOLOGICAL_SIGNIFICANCE_DEEP_DIVE.md`
 - `docs/USER_INPUT_FORMATS.md`
 - `docs/AI_INTEGRATION.md`
 - `docs/REPRODUCIBLE_EXECUTION.md`
