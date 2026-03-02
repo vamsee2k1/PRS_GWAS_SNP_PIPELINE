@@ -19,6 +19,8 @@ G{"run.mode"}:::yellow
 H("FULL MODE branch"):::pink
 I("VARIANT_ONLY branch"):::purple
 J("Shared Interpretation Layer"):::green
+JAI{"ai.enabled?"}:::yellow
+JMOD("Optional AI Layer <br> qc_anomaly + variant_prioritization + explainer"):::purple
 K("Run Manifest + Final Outputs"):::green
 L("End"):::green
 
@@ -30,7 +32,10 @@ G -- full --> H
 G -- variant_only --> I
 H --> J
 I --> J
-J --> K --> L
+J --> JAI
+JAI -- Yes --> JMOD --> K
+JAI -- No --> K
+K --> L
 E --> K
 
 %% Styling
@@ -177,7 +182,12 @@ AE{"Genotype-bearing VCF?"}:::yellow
 AF("No sample-level PRS <br> summary-style inputs"):::orange
 AG("Sample-level PRS scores <br> if loci overlap"):::green
 
-AH("Shared outputs to manifest"):::green
+AH("Core outputs ready"):::green
+AI0{"ai.enabled?"}:::yellow
+AI1("AI QC anomaly report"):::purple
+AI2("AI variant prioritization report"):::purple
+AI3("AI explainer summary"):::purple
+AI4("Run manifest + final outputs"):::green
 
 %% Edges
 A --> B
@@ -224,6 +234,14 @@ X --> AH
 Z --> AH
 AD --> AH
 AB --> AH
+AH --> AI0
+AI0 -- No --> AI4
+AI0 -- Yes --> AI1
+AI0 -- Yes --> AI2
+AI0 -- Yes --> AI3
+AI1 --> AI4
+AI2 --> AI4
+AI3 --> AI4
 
 %% Styling
 classDef green fill:#B2DFDB,stroke:#00897B,stroke-width:2px;
@@ -333,6 +351,21 @@ Outputs:
 - `results/prs/prs_scores.tsv`
 - `results/prs/prs_qc.tsv`
 - `results/prs/prs_distribution.png`
+
+## Step 9: Optional AI Interpretation Layer
+
+- `workflow/scripts/ai_qc_anomaly.py` flags potential QC issues from preflight + QC metrics.
+- `workflow/scripts/ai_variant_prioritization.py` ranks variants using association, effect size, annotation class, and context genes.
+- `workflow/scripts/ai_explainer.py` writes a structured biological narrative summary from QC, association, enrichment, and optional PRS outputs.
+- AI modules are additive and deterministic; they do not modify core variant/RNA/PRS result tables.
+
+Outputs:
+- `results/docs/ai/ai_qc_anomalies.tsv`
+- `results/docs/ai/ai_qc_anomaly_report.md`
+- `results/docs/ai/ai_variant_prioritization.tsv`
+- `results/docs/ai/ai_variant_prioritization_top.png`
+- `results/docs/ai/ai_variant_prioritization_report.md`
+- `results/docs/ai/ai_explainer.md`
 
 ## Destination and Documentation
 

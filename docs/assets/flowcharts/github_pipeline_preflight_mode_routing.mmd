@@ -12,6 +12,8 @@ G{"run.mode"}:::yellow
 H("FULL MODE branch"):::pink
 I("VARIANT_ONLY branch"):::purple
 J("Shared Interpretation Layer"):::green
+JAI{"ai.enabled?"}:::yellow
+JMOD("Optional AI Layer <br> qc_anomaly + variant_prioritization + explainer"):::purple
 K("Run Manifest + Final Outputs"):::green
 L("End"):::green
 
@@ -23,7 +25,10 @@ G -- full --> H
 G -- variant_only --> I
 H --> J
 I --> J
-J --> K --> L
+J --> JAI
+JAI -- Yes --> JMOD --> K
+JAI -- No --> K
+K --> L
 E --> K
 
 %% Styling

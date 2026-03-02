@@ -33,7 +33,12 @@ AD("PRS reports + QC + distribution"):::purple
 AE{"Genotype-bearing VCF?"}:::yellow
 AF("No sample-level PRS <br> summary-style inputs"):::orange
 AG("Sample-level PRS scores <br> if loci overlap"):::green
-AH("Shared outputs to manifest"):::green
+AH("Core outputs ready"):::green
+AI0{"ai.enabled?"}:::yellow
+AI1("AI QC anomaly report"):::purple
+AI2("AI variant prioritization report"):::purple
+AI3("AI explainer summary"):::purple
+AI4("Run manifest + final outputs"):::green
 %% Edges
 A --> B
 B -- VCF/VCF.GZ --> C
@@ -71,6 +76,14 @@ X --> AH
 Z --> AH
 AD --> AH
 AB --> AH
+AH --> AI0
+AI0 -- No --> AI4
+AI0 -- Yes --> AI1
+AI0 -- Yes --> AI2
+AI0 -- Yes --> AI3
+AI1 --> AI4
+AI2 --> AI4
+AI3 --> AI4
 %% Styling
 classDef green fill:#B2DFDB,stroke:#00897B,stroke-width:2px;
 classDef orange fill:#FFE0B2,stroke:#FB8C00,stroke-width:2px;

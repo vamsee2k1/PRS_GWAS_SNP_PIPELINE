@@ -98,11 +98,22 @@ flowchart TD
     Q -->|Yes| R["RNA quantification, DE analysis, enrichment"]
     Q -->|No| S["Skip RNA branch"]
 
-    L --> T["Run manifest and final outputs"]
-    M --> T
-    O --> T
-    R --> T
-    C --> T
+    L --> AIQ{"AI enabled?"}
+    M --> AIQ
+    O --> AIQ
+    R --> AIQ
+    C --> AIQ
+
+    AIQ -->|Yes| AI1["AI QC anomaly detection"]
+    AIQ -->|Yes| AI2["AI variant prioritization"]
+    AIQ -->|Yes| AI3["AI explainer summary"]
+    AI1 --> AI3
+    AI2 --> AI3
+
+    AIQ -->|No| T["Run manifest and final outputs"]
+    AI1 --> T
+    AI2 --> T
+    AI3 --> T
     T --> U([End])
 ```
 

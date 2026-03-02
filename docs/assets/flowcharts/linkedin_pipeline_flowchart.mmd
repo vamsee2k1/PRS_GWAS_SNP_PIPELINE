@@ -38,11 +38,23 @@ flowchart TB
     R1 -->|Yes| R2[RNA Quant + DGE + Enrichment<br/>StringTie / featureCounts / DESeq2]
     R1 -->|No| R3[Skip RNA Branch]
 
+    %% AI (optional)
+    I31 --> AI0{AI Enabled?}
+    I32 --> AI0
+    I33 --> AI0
+    P3 --> AI0
+    R2 --> AI0
+    B --> AI0
+
+    AI0 -->|Yes| AI1[AI QC Anomaly Report]
+    AI0 -->|Yes| AI2[AI Variant Prioritization]
+    AI0 -->|Yes| AI3[AI Explainer Summary]
+    AI1 --> AI3
+    AI2 --> AI3
+
     %% Final
-    I31 --> Z[Run Manifest + Final Outputs]
-    I32 --> Z
-    I33 --> Z
-    P3 --> Z
-    R2 --> Z
-    B --> Z
+    AI0 -->|No| Z[Run Manifest + Final Outputs]
+    AI1 --> Z
+    AI2 --> Z
+    AI3 --> Z
     Z --> END([End])
