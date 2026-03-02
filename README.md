@@ -1,5 +1,83 @@
 # Reproducible Bioinformatics Pipeline (DNA/RNA + PRS)
 
+## Start Here (Simple Clone and Run)
+
+```bash
+git clone https://github.com/vamsee2k1/PRS_GWAS_SNP_PIPELINE.git
+cd PRS_GWAS_SNP_PIPELINE
+conda env create -f envs/workflow.yaml
+conda activate bioinfo-workflow
+```
+
+Run a ready test directly:
+
+```bash
+# Variant mode (GWAS summary TSV)
+./run_pipeline.sh --use-conda --cores 8 \
+  --configfile config/final_tests/final_test_gwas_advp.yaml \
+  --config output_dir=results_test_variant_gwas
+```
+
+```bash
+# Full mode (GIAB HG002 FASTQ pair)
+./run_pipeline.sh --use-conda --cores 8 \
+  --configfile config/final_tests/final_test_full_giab.yaml \
+  --config output_dir=results_test_full_giab
+```
+
+Important:
+- Users do **not** convert FASTQ/VCF/TSV data into YAML.
+- YAML is only for configuration (paths, mode, thresholds).
+
+### Minimal YAML Paths Users Need to Set
+
+Variant-only mode (VCF/GWAS table input):
+
+```yaml
+run:
+  mode: variant_only
+  variant_data_mode: gwas_summary  # or vcf_interpretation
+
+reference:
+  fasta: /absolute/path/to/GRCh38.fa
+  gtf: /absolute/path/to/Homo_sapiens.GRCh38.110.gtf
+
+paths:
+  variants_input: /absolute/path/to/my_input.tsv   # .tsv/.csv/.vcf/.vcf.gz
+  prs_weights: /absolute/path/to/PGS002280.txt.gz  # optional
+  gene_sets: /absolute/path/to/Reactome_2022.gmt
+```
+
+Full mode (FASTQ input):
+
+```yaml
+run:
+  mode: full
+  assay: dna
+  read_type: short
+
+reference:
+  fasta: /absolute/path/to/GRCh38.fa
+  gtf: /absolute/path/to/Homo_sapiens.GRCh38.110.gtf
+
+samplesheet: config/samples.my_run.tsv
+metadata: config/metadata.my_run.tsv
+```
+
+Example `samples.my_run.tsv`:
+
+```tsv
+sample	fastq_1	fastq_2
+S1	/absolute/path/S1_R1.fastq.gz	/absolute/path/S1_R2.fastq.gz
+```
+
+Example `metadata.my_run.tsv`:
+
+```tsv
+sample
+S1
+```
+
 ## Biological Significance
 
 This pipeline is designed to connect **raw sequencing and external variant data to biologically interpretable outputs** that are commonly used in genomics and translational research:
@@ -115,6 +193,7 @@ GitHub publishing, branch protection, and citation setup is in `docs/GITHUB_PUBL
 Recent regression-test and example-file validation evidence is in `docs/validation/2026-02-23_regression_checks.md`.
 Detailed canonical example interpretation is in `docs/REAL_DATASET_EXAMPLES.md`.
 Final rerun metrics and pass/fail summary are in `FINAL_TEST.md`.
+AI integration details are in `docs/AI_INTEGRATION.md`.
 
 ## Pipeline Architecture (High-Level)
 
@@ -161,32 +240,22 @@ Detailed split flowcharts (preflight/mode routing, full mode, and variant-only +
 
 ## Quick Start
 
-1. Prepare inputs using `docs/USER_INPUT_FORMATS.md`.
-2. Update `config/config.yaml`.
-3. Run:
-
 ```bash
-snakemake --use-conda --cores 8
+# 1) Activate env once
+conda activate bioinfo-workflow
+
+# 2) Run any mode config
+./run_pipeline.sh --use-conda --cores 8 --configfile config/final_tests/final_test_gwas_advp.yaml
 ```
 
-If you want a terminal loading spinner between rule logs:
+Useful options:
 
 ```bash
-./run_pipeline.sh --use-conda --cores 8
-```
+# Dry-run only
+./run_pipeline.sh -n --use-conda --cores 8 --configfile config/final_tests/final_test_gwas_advp.yaml
 
-If Snakemake is not installed, create it from `envs/workflow.yaml` first.
-
-For dry-run:
-
-```bash
-snakemake -n
-```
-
-For an explicit preflight validation-only check (resources, formats, build compatibility):
-
-```bash
-snakemake --use-conda --cores 1 --until preflight_resources
+# Preflight validation only
+./run_pipeline.sh --use-conda --cores 1 --until preflight_resources --configfile config/final_tests/final_test_gwas_advp.yaml
 ```
 
 ### Install and Run on a New PC (Verified)
@@ -302,6 +371,7 @@ Mode-specific essentials:
 - `full` DNA: `run.assay: dna`, `run.read_type: short|long`
 - RNA short-read: `reference.star_index`
 - strict compatibility checks: `validation.enforce_build_match: true` (recommended)
+- AI add-ons: `ai.enabled`, `ai.explainer`, `ai.qc_anomaly`, `ai.variant_prioritization`
 
 Advanced tuning (aligner, thresholds, PRS harmonization, depth behavior) is available in `config/config.yaml`.
 
@@ -332,6 +402,11 @@ If full FASTQ mode is used:
 - `results/qc/qc_before_after.tsv` + `qc_before_after.png`
 - `results/alignment/` (BAM/BAM index)
 - `results/depth/depth_summary.tsv` + `depth_distribution.png`
+
+If AI modules are enabled:
+- `results/docs/ai/ai_explainer.md`
+- `results/docs/ai/ai_qc_anomalies.tsv` + `ai_qc_anomaly_report.md`
+- `results/docs/ai/ai_variant_prioritization.tsv` + `ai_variant_prioritization_top.png`
 
 For full artifact inventory, see `docs/PIPELINE_DETAILS.md` and `docs/REAL_DATASET_EXAMPLES.md`.
 
