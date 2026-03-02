@@ -1,0 +1,20 @@
+output_dir: results_test_data_onekg_chr19_ad_high_prs_top40_grch38
+
+run:
+  mode: variant_only
+  variant_data_mode: vcf_interpretation
+  assay: dna
+  read_type: short
+  threads: 4
+
+reference:
+  genome_build: GRCh38
+
+paths:
+  variants_input: test_data/onekg_chr19_ad_high_prs_top40_grch38/onekg_chr19_ad_high_prs_top40_grch38.vcf.gz
+  prs_weights: resources/prs/models/PGS002280.txt.gz
+  gene_sets: resources/enrichment/real/Reactome_2022.gmt
+
+validation:
+  enforce_build_match: true
+  fail_on_warning: false

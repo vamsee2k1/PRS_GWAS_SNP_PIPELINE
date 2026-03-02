@@ -43,13 +43,13 @@ Reference:
 
 ## 2) Variant VCF Test Data
 
-- Dataset label: `GIAB/NIST7035 VCF subset (GRCh38)`
-- Folder: `test_data/giab_nist7035_vcf_subset_grch38/`
-- Files: `giab_nist7035_subset_grch38.vcf.gz` and `.tbi`
-- Config: `config/test_data/test_giab_nist7035_vcf_subset_grch38.yaml`
+- Dataset label: `1000 Genomes chr19 AD high-PRS top-40 subset (GRCh38)`
+- Folder: `test_data/onekg_chr19_ad_high_prs_top40_grch38/`
+- Files: `onekg_chr19_ad_high_prs_top40_grch38.vcf.gz` and `.tbi`
+- Config: `config/test_data/test_onekg_chr19_ad_high_prs_top40_grch38.yaml`
 
 ```yaml
-output_dir: results_test_data_giab_nist7035_vcf_subset_grch38
+output_dir: results_test_data_onekg_chr19_ad_high_prs_top40_grch38
 
 run:
   mode: variant_only
@@ -62,7 +62,7 @@ reference:
   genome_build: GRCh38
 
 paths:
-  variants_input: test_data/giab_nist7035_vcf_subset_grch38/giab_nist7035_subset_grch38.vcf.gz
+  variants_input: test_data/onekg_chr19_ad_high_prs_top40_grch38/onekg_chr19_ad_high_prs_top40_grch38.vcf.gz
   prs_weights: resources/prs/models/PGS002280.txt.gz
   gene_sets: resources/enrichment/real/Reactome_2022.gmt
 
@@ -74,11 +74,11 @@ validation:
 Run:
 
 ```bash
-./run_pipeline.sh --use-conda --cores 8 --configfile config/test_data/test_giab_nist7035_vcf_subset_grch38.yaml
+./run_pipeline.sh --use-conda --cores 8 --configfile config/test_data/test_onekg_chr19_ad_high_prs_top40_grch38.yaml
 ```
 
 References:
-- https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/
+- https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/
 - https://www.pgscatalog.org/score/PGS002280/
 
 ## 3) Full FASTQ Test Data

@@ -278,7 +278,7 @@ PIPELINE_VERBOSE=1 ./run_pipeline.sh --use-conda --cores 8 --configfile config/m
 ./run_pipeline.sh --use-conda --cores 8 --configfile config/test_data/test_niagads_advp_ad_gwas_hg38.yaml
 
 # VCF interpretation test
-./run_pipeline.sh --use-conda --cores 8 --configfile config/test_data/test_giab_nist7035_vcf_subset_grch38.yaml
+./run_pipeline.sh --use-conda --cores 8 --configfile config/test_data/test_onekg_chr19_ad_high_prs_top40_grch38.yaml
 
 # Full mode test
 ./run_pipeline.sh --use-conda --cores 8 --configfile config/test_data/test_giab_nist7035_fastq_subset_grch38.yaml
@@ -292,7 +292,7 @@ YAML code for all bundled tests is documented in:
 | Mode | Test Data Files | Config File | Purpose |
 | --- | --- | --- | --- |
 | `variant_only` + `gwas_summary` | `test_data/niagads_advp_ad_gwas_hg38/niagads_advp_ad_variant_records_hg38.tsv` | `config/test_data/test_niagads_advp_ad_gwas_hg38.yaml` | Validate TSV/CSV -> VCF conversion, GWAS interpretation, enrichment, AI reports |
-| `variant_only` + `vcf_interpretation` | `test_data/giab_nist7035_vcf_subset_grch38/giab_nist7035_subset_grch38.vcf.gz` (+ `.tbi`) | `config/test_data/test_giab_nist7035_vcf_subset_grch38.yaml` | Validate external VCF normalization/filtering, annotation, PRS branch, AI reports |
+| `variant_only` + `vcf_interpretation` | `test_data/onekg_chr19_ad_high_prs_top40_grch38/onekg_chr19_ad_high_prs_top40_grch38.vcf.gz` (+ `.tbi`) | `config/test_data/test_onekg_chr19_ad_high_prs_top40_grch38.yaml` | Validate external VCF normalization/filtering, annotation, PRS branch, AI reports |
 | `full` (DNA short-read) | `test_data/giab_nist7035_fastq_subset_grch38/giab_nist7035_subset_R1.fastq.gz`, `test_data/giab_nist7035_fastq_subset_grch38/giab_nist7035_subset_R2.fastq.gz` | `config/test_data/test_giab_nist7035_fastq_subset_grch38.yaml` | Validate full FASTQ workflow (QC->alignment->variants->annotation->AI) |
 
 ## 6) Real-Run Examples, Plots, and Biological Interpretation
@@ -371,6 +371,7 @@ Documentation index:
 Public dataset references used by bundled `test_data`:
 
 - NIAGADS ADVP: https://advp.niagads.org/
+- 1000 Genomes project data: https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/
 - GIAB data portal (NIST-backed reference samples): https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/
 - PGS Catalog score used in the VCF test config (`PGS002280`): https://www.pgscatalog.org/score/PGS002280/
 
