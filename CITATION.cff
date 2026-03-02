@@ -3,8 +3,8 @@ message: "If you use this pipeline in research, benchmarking, or publication, pl
 title: "Reproducible Bioinformatics Pipeline (DNA/RNA + Variant Interpretation + PRS)"
 type: software
 authors:
-  - family-names: "A"
-    given-names: "Vamsee"
+  - family-names: "Akkaraju"
+    given-names: "Vamsee krishna"
 repository-code: "https://github.com/vamsee2k1/PRS_GWAS_SNP_PIPELINE"
 license: "Apache-2.0"
 abstract: >
