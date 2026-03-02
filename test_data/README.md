@@ -134,3 +134,4 @@ Reference:
 
 - These are lightweight subsets for reproducible testing, not full-cohort production analyses.
 - Main mode templates for custom user data remain in `README.md` Section 4.3.
+- Users are responsible for complying with upstream dataset licenses/terms when reusing or redistributing derived subsets.

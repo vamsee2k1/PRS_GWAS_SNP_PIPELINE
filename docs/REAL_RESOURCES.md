@@ -42,3 +42,9 @@ Local directory: `resources/gwas/alzheimers/`
 
 - `resources/reference/star_grch38_index/` is currently empty and still needs STAR index generation for RNA short-read alignment.
 - snpEff database files are still optional and only needed if `annotation.method: snpeff` is enabled.
+
+## External License and Redistribution Reminder
+
+- This repository aggregates pointers and some lightweight derived subsets for reproducible testing.
+- Upstream resource licenses/terms still apply (NIAGADS, 1000 Genomes, GIAB, GWAS Catalog, PGS Catalog, Enrichr/BaderLab libraries).
+- Before redistributing bundled or derived files in another project/publication, verify the original source terms and required attributions.

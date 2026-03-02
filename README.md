@@ -7,6 +7,27 @@
 - This project is in active, continued development with planned improvements in robustness, usability, and expanded disease/resource coverage.
 - Current outputs are reproducible and publication-ready for documented workflows; roadmap expansion is ongoing.
 
+## Release and Versioning
+
+- Current software version: `0.1.0` (`VERSION`)
+- Changelog: `CHANGELOG.md`
+- Citation metadata: `CITATION.cff`
+- Release engineering guide: `docs/GITHUB_PUBLISHING.md`
+
+Helpful command:
+
+```bash
+./run_pipeline.sh --version
+```
+
+## Important Use Notice
+
+- Research use only. This pipeline is **not** a clinical diagnostic device.
+- PRS outputs are for **relative cohort-level risk stratification**, not deterministic individual diagnosis.
+- PRS portability across ancestry/backgrounds is a known limitation and must be considered in interpretation.
+- AI modules in this repo are deterministic local scripts and do not call external APIs by default.
+- If strict mode is required for sensitive human data, disable AI via `ai.enabled: false`.
+
 ## 1) Problem and Market Gap
 
 Many genomics users can run individual tools, but still struggle with:
@@ -363,6 +384,14 @@ Notes:
 - Use hg19/GRCh37 only when matching legacy cohorts.
 - AI outputs are additive; core scientific tables remain unchanged.
 - Full run details are always written to `.snakemake/log/...`.
+- This repository is for research workflows and reproducible analysis, not direct clinical decision support.
+
+Publish/Trust items in this repo:
+
+- CI workflow: `.github/workflows/ci.yml` (Python checks + Snakemake dry-runs)
+- Changelog: `CHANGELOG.md`
+- Version file: `VERSION`
+- Release/tag instructions: `docs/GITHUB_PUBLISHING.md`
 
 Documentation index:
 
@@ -372,15 +401,19 @@ Documentation index:
 - `docs/AI_INTEGRATION.md`
 - `docs/REPRODUCIBLE_EXECUTION.md`
 - `docs/REAL_DATASET_EXAMPLES.md`
+- `docs/REAL_RESOURCES.md`
 - `FINAL_TEST.md`
 - `test_data/README.md` (bundled test YAMLs + dataset references)
 
-Public dataset references used by bundled `test_data`:
+External resources and licensing/redistribution notes:
 
-- NIAGADS ADVP: https://advp.niagads.org/
-- 1000 Genomes project data: https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/
-- GIAB data portal (NIST-backed reference samples): https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/
-- PGS Catalog score used in the VCF test config (`PGS002280`): https://www.pgscatalog.org/score/PGS002280/
+| Resource | Source | Local Usage in Repo | License/Terms Note |
+| --- | --- | --- | --- |
+| NIAGADS ADVP GWAS tables | https://advp.niagads.org/ | Public-data-derived GWAS test TSV subset in `test_data/` | Follow NIAGADS data-use terms for downstream redistribution and reuse. |
+| 1000 Genomes | https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/ | Public-data-derived VCF subset in `test_data/` | Follow 1000G usage policy and attribution guidance. |
+| GIAB reference samples | https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/ | Public-data-derived FASTQ subset in `test_data/` | Follow GIAB/NIST data-use conditions. |
+| PGS Catalog score `PGS002280` | https://www.pgscatalog.org/score/PGS002280/ | PRS model file path in test config | Follow PGS Catalog redistribution and citation requirements. |
+| Enrichment gene sets (Reactome/GO/KEGG/BaderLab) | Listed in `docs/REAL_RESOURCES.md` | Used for enrichment tests and examples | Follow source library-specific license/attribution terms. |
 
 License:
 
@@ -388,5 +421,18 @@ License:
 
 Citation:
 
-- Use `CITATION.cff` for citation metadata.
+- Preferred metadata source: `CITATION.cff`
 - For publications, report repository commit/tag, config YAML, reference build, and key resource versions.
+
+BibTeX:
+
+```bibtex
+@software{akkaraju_reproducible_bioinformatics_pipeline_2026,
+  author       = {Akkaraju, Vamsee Krishna},
+  title        = {Reproducible Bioinformatics Pipeline (DNA/RNA + Variant Interpretation + PRS)},
+  year         = {2026},
+  version      = {0.1.0},
+  url          = {https://github.com/vamsee2k1/PRS_GWAS_SNP_PIPELINE},
+  license      = {Apache-2.0}
+}
+```

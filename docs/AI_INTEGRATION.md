@@ -2,6 +2,19 @@
 
 This repository now includes an optional AI layer designed for reproducible, offline-friendly analysis support.
 
+## Safety and Scope
+
+- Research use only. AI outputs are assistive summaries, not clinical decisions.
+- Default implementation is local/offline and deterministic.
+- No external API calls are made by bundled AI scripts.
+- Core pipeline outputs (`VCF`, QC tables, enrichment, PRS tables) remain primary evidence; AI outputs are additive.
+- For strict governance, disable all AI modules:
+
+```yaml
+ai:
+  enabled: false
+```
+
 ## Modules
 
 1. Results Explainer
@@ -47,4 +60,4 @@ ai:
 - The AI layer is deterministic and does not require external API calls.
 - Core scientific outputs remain unchanged; AI files are additive.
 - Run manifest captures AI settings (`ai_*` fields) for reproducibility.
-
+- If users add external LLM/API integrations in the future, data-transfer controls and API keys should be explicitly documented in their deployment environment and disabled by default for human genomics data.

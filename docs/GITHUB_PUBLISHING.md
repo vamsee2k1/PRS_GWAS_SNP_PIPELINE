@@ -13,6 +13,8 @@ These files are present and should be kept in sync with releases:
 - `LICENSE` (Apache-2.0)
 - `NOTICE`
 - `CITATION.cff`
+- `VERSION`
+- `CHANGELOG.md`
 - `CONTRIBUTING.md`
 - `.github/CODEOWNERS`
 - `.github/pull_request_template.md`
@@ -58,8 +60,19 @@ git push origin v0.1.0
 
 After each release:
 
+- Update `VERSION`
+- Add/refresh `CHANGELOG.md`
 - Update `CITATION.cff` `version` if needed
 - Confirm README references remain accurate
+
+## CI and Quality Gates
+
+Current CI workflow:
+
+- `.github/workflows/ci.yml`
+  - Python script compile checks (`py_compile`)
+  - Unit tests (`tests/test_csv_to_vcf.py`)
+  - Snakemake dry-run checks for bundled test configs (`--until preflight_resources`)
 
 ## Publication-Readiness Checklist
 
@@ -70,6 +83,6 @@ After each release:
 - [x] Test runs documented for `gwas_summary`, `variant_only`, and `full`
   - `FINAL_TEST.md`
   - `docs/REAL_DATASET_EXAMPLES.md`
+- [x] CI workflow added (`.github/workflows/ci.yml`)
 - [ ] Branch protection enabled on `main` (GitHub UI)
 - [ ] First release tag created (for example `v0.1.0`)
-

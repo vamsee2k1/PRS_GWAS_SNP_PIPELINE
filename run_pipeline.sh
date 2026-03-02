@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+if [[ "${1:-}" == "--version" || "${1:-}" == "-V" ]]; then
+  cat VERSION
+  exit 0
+fi
+
 # Wrapper for better UX during long runs: shows spinner during quiet phases.
 # Keep caches inside the project when running in restricted/sandboxed environments.
 export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$PWD/.cache}"
