@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="3840" height="2160" viewBox="0 0 3840 2160" role="img" aria-labelledby="title desc">
+  <title id="title">High-Level PRS GWAS SNP Pipeline Flowchart</title>
+  <desc id="desc">LinkedIn high-level overview of the PRS GWAS SNP pipeline with AI integration.</desc>
+
+  <defs>
+    <style>
+      .bg { fill: #f6f8fb; }
+      .title { font: 700 72px "Helvetica Neue", Arial, sans-serif; fill: #0f172a; }
+      .subtitle { font: 400 34px "Helvetica Neue", Arial, sans-serif; fill: #334155; }
+      .label { font: 600 34px "Helvetica Neue", Arial, sans-serif; fill: #0f172a; }
+      .sublabel { font: 400 25px "Helvetica Neue", Arial, sans-serif; fill: #334155; }
+      .edge { stroke: #334155; stroke-width: 8; fill: none; stroke-linecap: round; }
+      .mode-edge { stroke: #1d4ed8; stroke-width: 8; fill: none; stroke-linecap: round; }
+      .opt-edge { stroke: #0f766e; stroke-width: 8; fill: none; stroke-linecap: round; }
+      .branch-tag { font: 600 24px "Helvetica Neue", Arial, sans-serif; fill: #1e3a8a; }
+      .node-stroke { stroke: #0f172a; stroke-width: 4; rx: 26; }
+      .top { fill: #e2e8f0; }
+      .router { fill: #dbeafe; }
+      .full { fill: #fde68a; }
+      .variant { fill: #fbcfe8; }
+      .shared { fill: #ccfbf1; }
+      .analysis { fill: #ddd6fe; }
+      .optional { fill: #bbf7d0; }
+      .ai { fill: #bfdbfe; }
+      .final { fill: #fed7aa; }
+    </style>
+
+    <marker id="arrow" markerWidth="16" markerHeight="16" refX="13" refY="8" orient="auto">
+      <path d="M0,0 L16,8 L0,16 Z" fill="#334155"/>
+    </marker>
+    <marker id="arrow-blue" markerWidth="16" markerHeight="16" refX="13" refY="8" orient="auto">
+      <path d="M0,0 L16,8 L0,16 Z" fill="#1d4ed8"/>
+    </marker>
+    <marker id="arrow-green" markerWidth="16" markerHeight="16" refX="13" refY="8" orient="auto">
+      <path d="M0,0 L16,8 L0,16 Z" fill="#0f766e"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="3840" height="2160"/>
+
+  <text class="title" x="1920" y="132" text-anchor="middle">PRS_GWAS_SNP_PIPELINE</text>
+  <text class="subtitle" x="1920" y="188" text-anchor="middle">High-Level Architecture for LinkedIn (AI Integrated)</text>
+
+  <!-- Row 1 -->
+  <rect class="node-stroke top" x="1320" y="260" width="1200" height="170"/>
+  <text class="label" x="1920" y="330" text-anchor="middle">Config + Preflight Validation</text>
+  <text class="sublabel" x="1920" y="376" text-anchor="middle">Input checks, build checks, and mode resolution</text>
+
+  <!-- Row 2 -->
+  <rect class="node-stroke router" x="1470" y="520" width="900" height="150"/>
+  <text class="label" x="1920" y="598" text-anchor="middle">Mode Router</text>
+  <text class="sublabel" x="1920" y="636" text-anchor="middle">Full mode or Variant-only mode</text>
+
+  <!-- Row 3 left/right -->
+  <rect class="node-stroke full" x="520" y="780" width="1250" height="190"/>
+  <text class="label" x="1145" y="858" text-anchor="middle">Full Mode (FASTQ)</text>
+  <text class="sublabel" x="1145" y="904" text-anchor="middle">QC/Trim -> Align -> Call Variants</text>
+
+  <rect class="node-stroke variant" x="2070" y="780" width="1250" height="190"/>
+  <text class="label" x="2695" y="858" text-anchor="middle">Variant-Only Mode (VCF/CSV/TSV)</text>
+  <text class="sublabel" x="2695" y="904" text-anchor="middle">Convert/Normalize/Filter external variants</text>
+
+  <!-- Shared VCF -->
+  <rect class="node-stroke shared" x="1250" y="1080" width="1340" height="170"/>
+  <text class="label" x="1920" y="1148" text-anchor="middle">Shared Final Filtered VCF</text>
+  <text class="sublabel" x="1920" y="1196" text-anchor="middle">Single downstream entry point for interpretation</text>
+
+  <!-- Analysis -->
+  <rect class="node-stroke analysis" x="520" y="1360" width="1500" height="220"/>
+  <text class="label" x="1270" y="1434" text-anchor="middle">Core Interpretation Layer</text>
+  <text class="sublabel" x="1270" y="1484" text-anchor="middle">Annotation + QC Metrics + Visuals + Enrichment</text>
+  <text class="sublabel" x="1270" y="1530" text-anchor="middle">(Manhattan, QQ, Volcano, Heatmap, pathways)</text>
+
+  <!-- Optional branches -->
+  <rect class="node-stroke optional" x="2140" y="1360" width="1180" height="220"/>
+  <text class="label" x="2730" y="1434" text-anchor="middle">Optional Branches</text>
+  <text class="sublabel" x="2730" y="1484" text-anchor="middle">PRS scoring and RNA quant/DE analysis</text>
+  <text class="sublabel" x="2730" y="1530" text-anchor="middle">Enabled only when inputs/config are provided</text>
+
+  <!-- AI -->
+  <rect class="node-stroke ai" x="1120" y="1690" width="1600" height="180"/>
+  <text class="label" x="1920" y="1760" text-anchor="middle">AI Layer (Optional)</text>
+  <text class="sublabel" x="1920" y="1808" text-anchor="middle">QC anomaly report + variant prioritization + biological explainer</text>
+
+  <!-- Final -->
+  <rect class="node-stroke final" x="1320" y="1960" width="1200" height="140"/>
+  <text class="label" x="1920" y="2042" text-anchor="middle">Run Manifest + Final Outputs</text>
+
+  <!-- Edges -->
+  <path class="edge" d="M1920 430 L1920 520" marker-end="url(#arrow)"/>
+
+  <path class="mode-edge" d="M1770 670 C1600 715, 1420 740, 1145 780" marker-end="url(#arrow-blue)"/>
+  <path class="mode-edge" d="M2070 670 C2240 715, 2420 740, 2695 780" marker-end="url(#arrow-blue)"/>
+
+  <path class="edge" d="M1145 970 C1145 1030, 1500 1060, 1730 1080" marker-end="url(#arrow)"/>
+  <path class="edge" d="M2695 970 C2695 1030, 2340 1060, 2110 1080" marker-end="url(#arrow)"/>
+
+  <path class="edge" d="M1660 1250 C1540 1300, 1420 1320, 1270 1360" marker-end="url(#arrow)"/>
+  <path class="edge" d="M2180 1250 C2300 1300, 2420 1320, 2730 1360" marker-end="url(#arrow)"/>
+
+  <path class="opt-edge" d="M1270 1580 C1270 1630, 1570 1660, 1780 1690" marker-end="url(#arrow-green)"/>
+  <path class="opt-edge" d="M2730 1580 C2730 1630, 2430 1660, 2060 1690" marker-end="url(#arrow-green)"/>
+
+  <path class="edge" d="M1920 1870 L1920 1960" marker-end="url(#arrow)"/>
+
+  <!-- Branch labels -->
+  <text class="branch-tag" x="1465" y="730">Full mode</text>
+  <text class="branch-tag" x="2280" y="730">Variant-only mode</text>
+</svg>

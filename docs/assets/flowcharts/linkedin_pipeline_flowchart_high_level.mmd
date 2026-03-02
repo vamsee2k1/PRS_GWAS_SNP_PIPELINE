@@ -1,0 +1,29 @@
+flowchart TB
+    A[Pipeline Start] --> B[Load Config + Preflight Validation]
+    B --> C{Run Mode}
+
+    C -->|Full mode| D[FASTQ Processing<br/>QC + Trim + Align + Variant Calling]
+    C -->|Variant-only mode| E[External Variants Input<br/>VCF / VCF.GZ / CSV / TSV]
+
+    E --> F[Normalize / Convert / Filter]
+    D --> G[Final Filtered VCF]
+    F --> G
+
+    G --> H[Interpretation Layer<br/>Annotation + QC + Visuals + Enrichment]
+    G --> I{PRS enabled?}
+    I -->|Yes| J[PRS Scoring + QC + Distribution]
+    I -->|No| K[Skip PRS]
+
+    D --> L{RNA branch enabled?}
+    L -->|Yes| M[RNA Quant + Differential Expression + Enrichment]
+    L -->|No| N[Skip RNA branch]
+
+    H --> O{AI enabled?}
+    J --> O
+    M --> O
+    B --> O
+
+    O -->|Yes| P[AI QC Anomaly + Variant Prioritization + Explainer]
+    O -->|No| Q[Run Manifest + Final Outputs]
+    P --> Q
+    Q --> R[End]
